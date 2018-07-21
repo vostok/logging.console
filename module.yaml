@@ -1,4 +1,4 @@
-sdk *default:
+notests *default:
   build:
     target: Vostok.Logging.ConsoleLog.sln
     configuration: NoTests
