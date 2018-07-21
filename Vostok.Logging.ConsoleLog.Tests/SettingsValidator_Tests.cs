@@ -1,31 +1,17 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Vostok.Logging.ConsoleLog.Tests
 {
     [TestFixture]
-    internal class SettingsValidator_Tests
+    internal class SettingsValidator_Tests // TODO(krait): write updated tests for validation
     {
         [Test]
         public void Default_ConsoleLogSettings_should_be_valid()
         {
-            consoleLogSettings.Validate().IsSuccessful.Should().BeTrue();
-        }
-
-        [Test]
-        public void Null_ConsoleLogSettings_should_not_be_valid()
-        {
-            consoleLogSettings = null;
-
-            consoleLogSettings.Validate().IsSuccessful.Should().BeFalse();
-        }
-
-        [Test]
-        public void ConsoleLogSettings_with_null_ConversionPattern_should_not_be_valid()
-        {
-            consoleLogSettings.ConversionPattern = null;
-
-            consoleLogSettings.Validate().IsSuccessful.Should().BeFalse();
+            new Action(() => ConsoleLogSettingsValidator.Validate(new ConsoleLogGlobalSettings()))
+                .Should().NotThrow();
         }
 
         [SetUp]

@@ -2,17 +2,11 @@
 
 namespace Vostok.Logging.ConsoleLog
 {
-    internal class ConsoleLogSettingsValidator : ILogSettingsValidator<ConsoleLogSettings>
+    internal static class ConsoleLogSettingsValidator
     {
-        public SettingsValidationResult TryValidate(ConsoleLogSettings settings)
+        public static void Validate(ConsoleLogGlobalSettings settings)
         {
-            if (settings?.ConversionPattern == null)
-                return SettingsValidationResult.ConversionPatternIsNull();
-
-            if (settings.EventsQueueCapacity <= 0)
-                return SettingsValidationResult.CapacityIsLessThanZero();
-
-            return SettingsValidationResult.Success();
+            // TODO(krait): validate
         }
     }
 }
