@@ -1,4 +1,5 @@
-﻿using Vostok.Logging.Abstractions;
+﻿using System.IO;
+using Vostok.Logging.Abstractions;
 using Vostok.Logging.Core.ConversionPattern;
 
 namespace Vostok.Logging.Console.MessageWriters
@@ -14,7 +15,7 @@ namespace Vostok.Logging.Console.MessageWriters
         {
             this.pattern = pattern;
 
-            var stream = Console.OpenStandardOutput(bufferSize);
+            var stream = System.Console.OpenStandardOutput(bufferSize);
             writer = new StreamWriter(stream);
         }
 
