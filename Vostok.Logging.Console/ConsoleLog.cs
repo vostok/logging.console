@@ -1,11 +1,16 @@
-﻿using System.Collections.Generic;
-using Vostok.Commons.Conversions;
-using Vostok.Logging.Abstractions;
+﻿using Vostok.Logging.Abstractions;
+using Vostok.Logging.Console.MessageWriters;
 
-namespace Vostok.Logging.ConsoleLog
+namespace Vostok.Logging.Console
 {
     public class ConsoleLog : ILog
     {
+        public static void UpdateGlobalSettings(ConsoleLogGlobalSettings newSettings)
+        {
+            ConsoleLogSettingsValidator.Validate(newSettings);
+            ConsoleLogMuxer.Settings = newSettings;
+        }
+
         private readonly ConsoleLogSettings settings;
 
         public ConsoleLog(ConsoleLogSettings settings)
@@ -16,13 +21,6 @@ namespace Vostok.Logging.ConsoleLog
         public ConsoleLog()
             : this(new ConsoleLogSettings())
         {
-        }
-
-        public static void UpdateGlobalSettings(ConsoleLogGlobalSettings newSettings)
-        {
-            ConsoleLogSettingsValidator.Validate(newSettings);
-
-            ConsoleLogMuxer.Settings = newSettings;
         }
 
         public void Log(LogEvent @event)

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Vostok.Logging.Abstractions;
+﻿using Vostok.Logging.Abstractions;
 using Vostok.Logging.Core.ConversionPattern;
 
-namespace Vostok.Logging.ConsoleLog
+namespace Vostok.Logging.Console
 {
     public class ConsoleLogSettings // TODO(krait): equals
     {

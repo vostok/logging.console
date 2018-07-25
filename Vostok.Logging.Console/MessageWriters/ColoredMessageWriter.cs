@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Vostok.Logging.Abstractions;
+﻿using Vostok.Logging.Abstractions;
 using Vostok.Logging.Core.ConversionPattern;
 
-namespace Vostok.Logging.ConsoleLog
+namespace Vostok.Logging.Console.MessageWriters
 {
     internal class ColoredMessageWriter : IMessageWriter
     {
-        private static readonly ConversionPatternRenderer renderer = new ConversionPatternRenderer();
-
         private readonly ConversionPattern pattern;
         private readonly Dictionary<LogLevel, ConsoleColor> colorMapping;
 
@@ -24,9 +20,7 @@ namespace Vostok.Logging.ConsoleLog
                 color = ConsoleColor.Gray;
 
             using (new ConsoleColorChanger(color))
-            {
-                renderer.Render(pattern, @event, Console.Out);
-            }
+                ConversionPatternRenderer.Render(pattern, @event, Console.Out);
         }
 
         public void Flush()

@@ -1,22 +1,21 @@
-﻿using System.Collections.Concurrent;
-using System.Threading.Tasks;
-using Vostok.Commons.Synchronization;
+﻿using Vostok.Commons.Synchronization;
 using Vostok.Logging.Abstractions;
+using Vostok.Logging.Console.MessageWriters;
 using Vostok.Logging.Core;
 
-namespace Vostok.Logging.ConsoleLog
+namespace Vostok.Logging.Console
 {
     internal static class ConsoleLogMuxer
     {
-        private static readonly ConcurrentDictionary<ConsoleLogSettings, IMessageWriter> messageWriters;
-        private static readonly AtomicBoolean isInitialized;
+        private static readonly ConcurrentDictionary<ConsoleLogSettings, IMessageWriter> MessageWriters;
+        private static readonly AtomicBoolean IsInitialized;
 
         private static volatile ConsoleLogGlobalState state;
 
         static ConsoleLogMuxer()
         {
-            messageWriters = new ConcurrentDictionary<ConsoleLogSettings, IMessageWriter>();
-            isInitialized = new AtomicBoolean(false);
+            MessageWriters = new ConcurrentDictionary<ConsoleLogSettings, IMessageWriter>();
+            IsInitialized = new AtomicBoolean(false);
 
             Settings = new ConsoleLogGlobalSettings();
             state = new ConsoleLogGlobalState(Settings);
@@ -24,7 +23,7 @@ namespace Vostok.Logging.ConsoleLog
 
         public static void Log(LogEvent @event, ConsoleLogSettings settings)
         {
-            if (!isInitialized)
+            if (!IsInitialized)
                 Initialize();
 
             ConsoleLogGlobalState currentState;
@@ -34,7 +33,7 @@ namespace Vostok.Logging.ConsoleLog
                 currentState = state;
             } while (currentState.IsClosedForWriting);
 
-            var writer = messageWriters.GetOrAdd(settings, MessageWriterFactory.Create);
+            var writer = MessageWriters.GetOrAdd(settings, MessageWriterFactory.Create);
             currentState.Events.TryAdd(new LogEventInfo(@event, writer));
         }
 
@@ -73,13 +72,13 @@ namespace Vostok.Logging.ConsoleLog
                 currentEvent.Writer.Write(currentEvent.Event);
             }
 
-            foreach (var writer in messageWriters)
+            foreach (var writer in MessageWriters)
                 writer.Value.Flush();
         }
 
         private static void Initialize()
         {
-            if (isInitialized.TrySetTrue())
+            if (IsInitialized.TrySetTrue())
                 StartLoggingTask();
         }
 

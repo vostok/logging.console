@@ -1,4 +1,4 @@
-﻿namespace Vostok.Logging.ConsoleLog
+﻿namespace Vostok.Logging.Console.MessageWriters
 {
     internal static class MessageWriterFactory
     {
@@ -6,7 +6,7 @@
         {
             if (settings.ColorsEnabled)
                 return new ColoredMessageWriter(settings.ConversionPattern, settings.ColorMapping);
-            
+
             return new ColorlessMessageWriter(settings.ConversionPattern, settings.StreamBufferSize);
         }
     }

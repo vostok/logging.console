@@ -1,6 +1,6 @@
 ﻿using Vostok.Logging.Abstractions;
 
-namespace Vostok.Logging.ConsoleLog
+namespace Vostok.Logging.Console.MessageWriters
 {
     internal interface IMessageWriter
     {

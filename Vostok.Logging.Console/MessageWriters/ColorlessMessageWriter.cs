@@ -1,14 +1,10 @@
-﻿using System;
-using System.IO;
-using Vostok.Logging.Abstractions;
+﻿using Vostok.Logging.Abstractions;
 using Vostok.Logging.Core.ConversionPattern;
 
-namespace Vostok.Logging.ConsoleLog
+namespace Vostok.Logging.Console.MessageWriters
 {
     internal class ColorlessMessageWriter : IMessageWriter
     {
-        private static readonly ConversionPatternRenderer renderer = new ConversionPatternRenderer();
-
         private readonly TextWriter writer;
         private readonly ConversionPattern pattern;
 
@@ -24,8 +20,7 @@ namespace Vostok.Logging.ConsoleLog
 
         public void Write(LogEvent @event)
         {
-            renderer.Render(pattern, @event, writer);
-
+            ConversionPatternRenderer.Render(pattern, @event, writer);
             isDirty = true;
         }
 

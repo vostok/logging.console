@@ -1,4 +1,4 @@
-﻿namespace Vostok.Logging.ConsoleLog
+﻿namespace Vostok.Logging.Console
 {
     public class ConsoleLogGlobalSettings // TODO(krait): equals
     {
