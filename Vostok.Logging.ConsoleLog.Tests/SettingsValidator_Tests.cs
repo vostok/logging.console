@@ -2,7 +2,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 
-namespace Vostok.Logging.Console.Tests
+namespace Vostok.Logging.ConsoleLog.Tests
 {
     [TestFixture]
     internal class SettingsValidator_Tests // TODO(krait): write updated tests for validation

@@ -14,7 +14,7 @@
     <PackageReference Include="System.Collections.Immutable" Version="1.5.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Vostok.Logging.Console\Vostok.Logging.Console.csproj" />
+    <ProjectReference Include="..\Vostok.Logging.ConsoleLog\Vostok.Logging.ConsoleLog.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Vostok.Logging.Abstractions">

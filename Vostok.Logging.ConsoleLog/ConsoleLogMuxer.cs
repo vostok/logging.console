@@ -2,10 +2,10 @@
 using System.Threading.Tasks;
 using Vostok.Commons.Synchronization;
 using Vostok.Logging.Abstractions;
-using Vostok.Logging.Console.MessageWriters;
+using Vostok.Logging.ConsoleLog.MessageWriters;
 using Vostok.Logging.Core;
 
-namespace Vostok.Logging.Console
+namespace Vostok.Logging.ConsoleLog
 {
     internal static class ConsoleLogMuxer
     {

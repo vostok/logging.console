@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Vostok.Logging.Console
+namespace Vostok.Logging.ConsoleLog
 {
     internal struct ConsoleColorChanger : IDisposable
     {
@@ -8,11 +8,11 @@ namespace Vostok.Logging.Console
 
         public ConsoleColorChanger(ConsoleColor newColor)
         {
-            oldColor = System.Console.ForegroundColor;
-            System.Console.ForegroundColor = newColor;
+            oldColor = Console.ForegroundColor;
+            Console.ForegroundColor = newColor;
         }
 
         public void Dispose() =>
-            System.Console.ForegroundColor = oldColor;
+            Console.ForegroundColor = oldColor;
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Vostok.Logging.Console
+﻿namespace Vostok.Logging.ConsoleLog
 {
     internal static class ConsoleLogSettingsValidator
     {

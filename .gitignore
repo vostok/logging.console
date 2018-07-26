@@ -288,3 +288,4 @@ __pycache__/
 *.xsd.cs
 /._*.sln
 Vostok.Logging.Console/Properties/AssemblyTitle.cs
+Vostok.Logging.ConsoleLog/Properties/AssemblyTitle.cs

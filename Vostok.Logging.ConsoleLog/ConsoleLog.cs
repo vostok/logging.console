@@ -1,7 +1,7 @@
 ﻿using Vostok.Logging.Abstractions;
-using Vostok.Logging.Console.MessageWriters;
+using Vostok.Logging.ConsoleLog.MessageWriters;
 
-namespace Vostok.Logging.Console
+namespace Vostok.Logging.ConsoleLog
 {
     public class ConsoleLog : ILog
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Core.ConversionPattern;
 
-namespace Vostok.Logging.Console.MessageWriters
+namespace Vostok.Logging.ConsoleLog.MessageWriters
 {
     internal class ColoredMessageWriter : IMessageWriter
     {
@@ -22,7 +22,7 @@ namespace Vostok.Logging.Console.MessageWriters
                 color = ConsoleColor.Gray;
 
             using (new ConsoleColorChanger(color))
-                ConversionPatternRenderer.Render(pattern, @event, System.Console.Out);
+                ConversionPatternRenderer.Render(pattern, @event, Console.Out);
         }
 
         public void Flush()

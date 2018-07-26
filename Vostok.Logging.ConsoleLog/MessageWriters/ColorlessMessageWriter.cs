@@ -2,7 +2,7 @@
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Core.ConversionPattern;
 
-namespace Vostok.Logging.Console.MessageWriters
+namespace Vostok.Logging.ConsoleLog.MessageWriters
 {
     internal class ColorlessMessageWriter : IMessageWriter
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Core.ConversionPattern;
 
-namespace Vostok.Logging.Console
+namespace Vostok.Logging.ConsoleLog
 {
     public class ConsoleLogSettings // TODO(krait): equals
     {

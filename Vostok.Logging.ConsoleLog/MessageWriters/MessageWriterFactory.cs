@@ -1,4 +1,4 @@
-﻿namespace Vostok.Logging.Console.MessageWriters
+﻿namespace Vostok.Logging.ConsoleLog.MessageWriters
 {
     internal static class MessageWriterFactory
     {
