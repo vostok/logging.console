@@ -11,9 +11,6 @@
 
         public static void ValidateInstanceSettings(ConsoleLogSettings settings)
         {
-            if (settings.StreamBufferSize <= 0)
-                Fail($"{nameof(settings.StreamBufferSize)} must be positive.");
-
             if (settings.ConversionPattern == null)
                 Fail($"{nameof(settings.ConversionPattern)} must not be null.");
 

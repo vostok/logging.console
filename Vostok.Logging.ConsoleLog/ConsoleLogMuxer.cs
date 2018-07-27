@@ -1,10 +1,8 @@
-﻿using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Vostok.Commons.Synchronization;
 using Vostok.Logging.Abstractions;
-using Vostok.Logging.ConsoleLog.MessageWriters;
 using Vostok.Logging.Core;
 
 #pragma warning disable 420
@@ -14,15 +12,14 @@ namespace Vostok.Logging.ConsoleLog
     internal static class ConsoleLogMuxer
     {
         private static readonly IEqualityComparer<ConsoleLogGlobalSettings> SettingsComparer = new GlobalSettingsComparer();
+        private static readonly MessageWriter MessageWriter = new MessageWriter(256);
 
-        private static readonly ConcurrentDictionary<ConsoleLogSettings, IMessageWriter> MessageWriters;
         private static readonly AtomicBoolean IsInitialized;
 
         private static volatile GlobalState state;
 
         static ConsoleLogMuxer()
         {
-            MessageWriters = new ConcurrentDictionary<ConsoleLogSettings, IMessageWriter>();
             IsInitialized = new AtomicBoolean(false);
 
             Settings = new ConsoleLogGlobalSettings();
@@ -34,9 +31,7 @@ namespace Vostok.Logging.ConsoleLog
             if (!IsInitialized)
                 Initialize();
 
-            // ReSharper disable once ConvertClosureToMethodGroup
-            var writer = MessageWriters.GetOrAdd(settings, logSettings => MessageWriterFactory.Create(logSettings));
-            var eventInfo = new LogEventInfo(@event, writer);
+            var eventInfo = new LogEventInfo(@event, settings);
 
             var currentState = state;
             while (!currentState.TryAddEvent(eventInfo))
@@ -61,7 +56,7 @@ namespace Vostok.Logging.ConsoleLog
                     }
                 });
         }
-        
+
         private static void LogEvents()
         {
             var newSettings = Settings;
@@ -87,7 +82,7 @@ namespace Vostok.Logging.ConsoleLog
         {
             try
             {
-                currentEvent.Writer.Write(currentEvent.Event);
+                MessageWriter.Write(currentEvent.Event, currentEvent.Settings);
             }
             catch
             {

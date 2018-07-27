@@ -1,18 +1,17 @@
 ﻿using Vostok.Logging.Abstractions;
-using Vostok.Logging.ConsoleLog.MessageWriters;
 
 namespace Vostok.Logging.ConsoleLog
 {
     internal class LogEventInfo
     {
-        public LogEventInfo(LogEvent @event, IMessageWriter writer)
+        public LogEventInfo(LogEvent @event, ConsoleLogSettings settings)
         {
             Event = @event;
-            Writer = writer;
+            Settings = settings;
         }
 
         public LogEvent Event { get; }
 
-        public IMessageWriter Writer { get; }
+        public ConsoleLogSettings Settings { get; }
     }
 }

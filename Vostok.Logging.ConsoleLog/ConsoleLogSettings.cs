@@ -7,7 +7,7 @@ using Vostok.Logging.Core;
 namespace Vostok.Logging.ConsoleLog
 {
     [PublicAPI]
-    public class ConsoleLogSettings // TODO(krait): equals
+    public class ConsoleLogSettings
     {
         public ConversionPattern ConversionPattern { get; set; } = ConversionPattern.Default;
 
@@ -21,7 +21,5 @@ namespace Vostok.Logging.ConsoleLog
         };
 
         public bool ColorsEnabled { get; set; } = true;
-
-        public int StreamBufferSize { get; set; } = 4096;
     }
 }
