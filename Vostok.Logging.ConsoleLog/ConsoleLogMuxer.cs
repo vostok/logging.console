@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Vostok.Commons.Synchronization;
@@ -12,7 +13,6 @@ namespace Vostok.Logging.ConsoleLog
     internal static class ConsoleLogMuxer
     {
         private static readonly IEqualityComparer<ConsoleLogGlobalSettings> SettingsComparer = new GlobalSettingsComparer();
-        private static readonly MessageWriter MessageWriter = new MessageWriter(256);
 
         private static readonly AtomicBoolean IsInitialized;
 
@@ -73,21 +73,8 @@ namespace Vostok.Logging.ConsoleLog
             do
             {
                 eventsCount = currentState.Events.Drain(currentState.TemporaryBuffer, 0, currentState.TemporaryBuffer.Length);
-                for (var i = 0; i < eventsCount; i++)
-                    WriteEvent(currentState.TemporaryBuffer[i]);
-            } while (eventsCount > 0);
-        }
-
-        private static void WriteEvent(LogEventInfo currentEvent)
-        {
-            try
-            {
-                MessageWriter.Write(currentEvent.Event, currentEvent.Settings);
-            }
-            catch
-            {
-                // ignored
-            }
+                currentState.EventsWriter.WriteEvents(currentState.TemporaryBuffer, eventsCount);
+            } while (eventsCount > 0 && currentState != state);
         }
 
         private static void Initialize()
@@ -108,6 +95,7 @@ namespace Vostok.Logging.ConsoleLog
 
                 TemporaryBuffer = new LogEventInfo[settings.EventsQueueCapacity];
                 Events = new BoundedBuffer<LogEventInfo>(settings.EventsQueueCapacity);
+                EventsWriter = new EventsWriter(settings.OutputBufferSize);
             }
 
             public ConsoleLogGlobalSettings Settings { get; }
@@ -115,6 +103,8 @@ namespace Vostok.Logging.ConsoleLog
             public LogEventInfo[] TemporaryBuffer { get; }
 
             public BoundedBuffer<LogEventInfo> Events { get; }
+
+            public EventsWriter EventsWriter { get; }
 
             public int EventsLost => eventsLost;
 
