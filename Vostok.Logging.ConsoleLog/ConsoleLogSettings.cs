@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 using Vostok.Logging.Abstractions;
-using Vostok.Logging.Core.ConversionPattern;
+using Vostok.Logging.Core;
 
 namespace Vostok.Logging.ConsoleLog
 {
+    [PublicAPI]
     public class ConsoleLogSettings // TODO(krait): equals
     {
-        public ConversionPattern ConversionPattern { get; set; } = new ConversionPatternBuilder().Default().ToPattern();
+        public ConversionPattern ConversionPattern { get; set; } = ConversionPattern.Default;
 
         public Dictionary<LogLevel, ConsoleColor> ColorMapping { get; set; } = new Dictionary<LogLevel, ConsoleColor>
         {

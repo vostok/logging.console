@@ -1,18 +1,24 @@
 ﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Vostok.Commons.Synchronization;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.ConsoleLog.MessageWriters;
 using Vostok.Logging.Core;
 
+#pragma warning disable 420
+
 namespace Vostok.Logging.ConsoleLog
 {
     internal static class ConsoleLogMuxer
     {
+        private static readonly IEqualityComparer<ConsoleLogGlobalSettings> SettingsComparer = new GlobalSettingsComparer();
+
         private static readonly ConcurrentDictionary<ConsoleLogSettings, IMessageWriter> MessageWriters;
         private static readonly AtomicBoolean IsInitialized;
 
-        private static volatile ConsoleLogGlobalState state;
+        private static volatile GlobalState state;
 
         static ConsoleLogMuxer()
         {
@@ -20,7 +26,7 @@ namespace Vostok.Logging.ConsoleLog
             IsInitialized = new AtomicBoolean(false);
 
             Settings = new ConsoleLogGlobalSettings();
-            state = new ConsoleLogGlobalState(Settings);
+            state = new GlobalState(Settings);
         }
 
         public static void Log(LogEvent @event, ConsoleLogSettings settings)
@@ -28,16 +34,16 @@ namespace Vostok.Logging.ConsoleLog
             if (!IsInitialized)
                 Initialize();
 
-            ConsoleLogGlobalState currentState;
+            // ReSharper disable once ConvertClosureToMethodGroup
+            var writer = MessageWriters.GetOrAdd(settings, logSettings => MessageWriterFactory.Create(logSettings));
+            var eventInfo = new LogEventInfo(@event, writer);
 
-            do
-            {
+            var currentState = state;
+            while (!currentState.TryAddEvent(eventInfo))
                 currentState = state;
-            } while (currentState.IsClosedForWriting);
-
-            var writer = MessageWriters.GetOrAdd(settings, MessageWriterFactory.Create);
-            currentState.Events.TryAdd(new LogEventInfo(@event, writer));
         }
+
+        public static int LostEvents => state.LostEvents;
 
         public static ConsoleLogGlobalSettings Settings { get; set; }
 
@@ -48,7 +54,7 @@ namespace Vostok.Logging.ConsoleLog
                 {
                     while (true)
                     {
-                        LogEvents(); // TODO(krait): handle errors
+                        LogEvents();
 
                         if (state.Events.Count == 0)
                             await state.Events.WaitForNewItemsAsync();
@@ -56,26 +62,69 @@ namespace Vostok.Logging.ConsoleLog
                 });
         }
 
+        private class DrainInfo
+        {
+            private int sum;
+            private int count;
+
+            public double Average => sum/(double)count;
+
+            public DrainInfo(int count, int sum)
+            {
+                this.count = count;
+                this.sum = sum;
+            }
+
+            public DrainInfo Add(int s)
+            {
+                return new DrainInfo(count + 1, sum + s);
+            }
+        }
+        private static volatile DrainInfo drainSizeInfo = new DrainInfo(0, 0);
+        private static volatile DrainInfo drainCountInfo = new DrainInfo(0, 0);
+
+        public static double AverageDrainSize => drainSizeInfo.Average;
+        public static double AverageDrainAttempts => drainCountInfo.Average;
+
         private static void LogEvents()
         {
             var newSettings = Settings;
 
             var currentState = state;
-            if (!Equals(newSettings, state.Settings))
+            if (!SettingsComparer.Equals(newSettings, state.Settings))
             {
-                state.IsClosedForWriting = true;
-                state = new ConsoleLogGlobalState(newSettings);
+                currentState.CloseForWriting();
+                state = new GlobalState(newSettings);
+                currentState.WaitForNoWriters();
             }
 
-            var eventsCount = currentState.Events.Drain(currentState.TemporaryBuffer, 0, currentState.TemporaryBuffer.Length);
-            for (var i = 0; i < eventsCount; i++)
+            int cnt = 0;
+            int eventsCount;
+            do
             {
-                var currentEvent = currentState.TemporaryBuffer[i];
-                currentEvent.Writer.Write(currentEvent.Event);
-            }
+                eventsCount = currentState.Events.Drain(currentState.TemporaryBuffer, 0, currentState.TemporaryBuffer.Length);
+                for (var i = 0; i < eventsCount; i++)
+                    WriteEvent(currentState.TemporaryBuffer[i]);
+                drainSizeInfo = drainSizeInfo.Add(eventsCount);
+                cnt++;
+            } while (eventsCount > 0);
+
+            drainCountInfo = drainCountInfo.Add(cnt);
 
             foreach (var writer in MessageWriters)
                 writer.Value.Flush();
+        }
+
+        private static void WriteEvent(LogEventInfo currentEvent)
+        {
+            try
+            {
+                currentEvent.Writer.Write(currentEvent.Event);
+            }
+            catch
+            {
+                // ignored
+            }
         }
 
         private static void Initialize()
@@ -84,9 +133,13 @@ namespace Vostok.Logging.ConsoleLog
                 StartLoggingTask();
         }
 
-        private class ConsoleLogGlobalState
+        private class GlobalState
         {
-            public ConsoleLogGlobalState(ConsoleLogGlobalSettings settings)
+            private volatile int writers;
+            private volatile bool isClosedForWriting;
+            private volatile int lostEvents;
+
+            public GlobalState(ConsoleLogGlobalSettings settings)
             {
                 Settings = settings;
 
@@ -100,7 +153,33 @@ namespace Vostok.Logging.ConsoleLog
 
             public BoundedBuffer<LogEventInfo> Events { get; }
 
-            public bool IsClosedForWriting { get; set; }
+            public int LostEvents => lostEvents;
+
+            public void WaitForNoWriters()
+            {
+                var spinWait = new SpinWait();
+
+                while (writers > 0)
+                    spinWait.SpinOnce();
+            }
+
+            public bool TryAddEvent(LogEventInfo eventInfo)
+            {
+                Interlocked.Increment(ref writers);
+
+                var willAdd = !isClosedForWriting;
+                if (willAdd)
+                {
+                    if (!Events.TryAdd(eventInfo))
+                        Interlocked.Increment(ref lostEvents);
+                }
+
+                Interlocked.Decrement(ref writers);
+
+                return willAdd;
+            }
+
+            public void CloseForWriting() => isClosedForWriting = true;
         }
     }
 }

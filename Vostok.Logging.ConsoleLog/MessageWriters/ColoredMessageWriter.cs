@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Vostok.Logging.Abstractions;
-using Vostok.Logging.Core.ConversionPattern;
+using Vostok.Logging.Core;
 
 namespace Vostok.Logging.ConsoleLog.MessageWriters
 {
+    // (krait): measured speed: ~4.5k messages/sec
     internal class ColoredMessageWriter : IMessageWriter
     {
         private readonly ConversionPattern pattern;
@@ -22,7 +23,7 @@ namespace Vostok.Logging.ConsoleLog.MessageWriters
                 color = ConsoleColor.Gray;
 
             using (new ConsoleColorChanger(color))
-                ConversionPatternRenderer.Render(pattern, @event, Console.Out);
+                pattern.Render(@event, Console.Out);
         }
 
         public void Flush()

@@ -1,20 +1,30 @@
-﻿using Vostok.Logging.Abstractions;
-using Vostok.Logging.ConsoleLog.MessageWriters;
+﻿using System;
+using JetBrains.Annotations;
+using Vostok.Logging.Abstractions;
 
 namespace Vostok.Logging.ConsoleLog
 {
+    // TODO(krait): Tests: settings validation, global settings validation
+    [PublicAPI]
     public class ConsoleLog : ILog
     {
-        public static void UpdateGlobalSettings(ConsoleLogGlobalSettings newSettings)
+        public static void UpdateGlobalSettings([NotNull] ConsoleLogGlobalSettings newSettings)
         {
-            ConsoleLogSettingsValidator.Validate(newSettings);
+            if (newSettings == null)
+                throw new ArgumentNullException(nameof(settings));
+
+            SettingsValidator.ValidateGlobalSettings(newSettings);
             ConsoleLogMuxer.Settings = newSettings;
         }
 
         private readonly ConsoleLogSettings settings;
 
-        public ConsoleLog(ConsoleLogSettings settings)
+        public ConsoleLog([NotNull] ConsoleLogSettings settings)
         {
+            if (settings == null)
+                throw new ArgumentNullException(nameof(settings));
+
+            SettingsValidator.ValidateInstanceSettings(settings);
             this.settings = settings;
         }
 
@@ -22,6 +32,10 @@ namespace Vostok.Logging.ConsoleLog
             : this(new ConsoleLogSettings())
         {
         }
+
+        public static int LostEvents => ConsoleLogMuxer.LostEvents;
+        public static double AverageDrainSize => ConsoleLogMuxer.AverageDrainSize;
+        public static double AverageDrainAttempts => ConsoleLogMuxer.AverageDrainAttempts;
 
         public void Log(LogEvent @event)
         {
@@ -34,18 +48,5 @@ namespace Vostok.Logging.ConsoleLog
         public bool IsEnabledFor(LogLevel level) => true;
 
         public ILog ForContext(string context) => this;
-    }
-
-    internal class LogEventInfo
-    {
-        public LogEventInfo(LogEvent @event, IMessageWriter writer)
-        {
-            Event = @event;
-            Writer = writer;
-        }
-
-        public LogEvent Event { get; }
-
-        public IMessageWriter Writer { get; }
     }
 }

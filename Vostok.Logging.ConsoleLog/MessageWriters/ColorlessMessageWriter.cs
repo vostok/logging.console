@@ -1,9 +1,13 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using Vostok.Logging.Abstractions;
-using Vostok.Logging.Core.ConversionPattern;
+using Vostok.Logging.Core;
 
 namespace Vostok.Logging.ConsoleLog.MessageWriters
 {
+    // (krait): measured speed: ~23k messages/sec
+    // (krait): problem: can overlap with messages from ColoredWriter in a bad way
+    // (krait): ~17k messages/sec if flushed after each event, which solves the problem
     internal class ColorlessMessageWriter : IMessageWriter
     {
         private readonly TextWriter writer;
@@ -15,20 +19,21 @@ namespace Vostok.Logging.ConsoleLog.MessageWriters
         {
             this.pattern = pattern;
 
-            var stream = System.Console.OpenStandardOutput(bufferSize);
-            writer = new StreamWriter(stream);
+            var stream = Console.OpenStandardOutput(bufferSize);
+            writer = new StreamWriter(stream, Console.OutputEncoding, bufferSize) {AutoFlush = false};
         }
 
         public void Write(LogEvent @event)
         {
-            ConversionPatternRenderer.Render(pattern, @event, writer);
-            isDirty = true;
+            pattern.Render(@event, writer);
+            writer.Flush();
+            //isDirty = true;
         }
 
         public void Flush()
         {
-            if (isDirty)
-                writer.Flush();
+            //if (isDirty)
+            //    writer.Flush();
         }
     }
 }

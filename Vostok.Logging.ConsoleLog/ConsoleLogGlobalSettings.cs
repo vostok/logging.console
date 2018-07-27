@@ -1,6 +1,9 @@
-﻿namespace Vostok.Logging.ConsoleLog
+﻿using JetBrains.Annotations;
+
+namespace Vostok.Logging.ConsoleLog
 {
-    public class ConsoleLogGlobalSettings // TODO(krait): equals
+    [PublicAPI]
+    public class ConsoleLogGlobalSettings
     {
         public int EventsQueueCapacity { get; set; } = 10000;
     }

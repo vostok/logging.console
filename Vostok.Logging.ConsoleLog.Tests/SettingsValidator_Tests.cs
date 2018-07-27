@@ -5,21 +5,15 @@ using NUnit.Framework;
 namespace Vostok.Logging.ConsoleLog.Tests
 {
     [TestFixture]
-    internal class SettingsValidator_Tests // TODO(krait): write updated tests for validation
+    internal class SettingsValidator_Tests
     {
         [Test]
-        public void Default_ConsoleLogSettings_should_be_valid()
+        public void ValidateGlobalSettings_should_consider_default_settings_valid()
         {
-            new Action(() => ConsoleLogSettingsValidator.Validate(new ConsoleLogGlobalSettings()))
+            new Action(() => SettingsValidator.ValidateGlobalSettings(new ConsoleLogGlobalSettings()))
                 .Should().NotThrow();
         }
 
-        [SetUp]
-        public void SetUp()
-        {
-            consoleLogSettings = new ConsoleLogSettings();
-        }
-        
-        private ConsoleLogSettings consoleLogSettings;
+        // TODO(krait): More tests.
     }
 }

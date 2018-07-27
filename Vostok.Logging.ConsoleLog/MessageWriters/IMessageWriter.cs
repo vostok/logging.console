@@ -6,6 +6,6 @@ namespace Vostok.Logging.ConsoleLog.MessageWriters
     {
         void Write(LogEvent @event);
 
-        void Flush();
+        void Flush(); // TODO(krait): Maybe remove.
     }
 }
