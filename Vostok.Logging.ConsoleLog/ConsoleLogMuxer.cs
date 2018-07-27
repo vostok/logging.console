@@ -43,7 +43,7 @@ namespace Vostok.Logging.ConsoleLog
                 currentState = state;
         }
 
-        public static int LostEvents => state.LostEvents;
+        public static int EventsLost => state.EventsLost;
 
         public static ConsoleLogGlobalSettings Settings { get; set; }
 
@@ -61,31 +61,7 @@ namespace Vostok.Logging.ConsoleLog
                     }
                 });
         }
-
-        private class DrainInfo
-        {
-            private int sum;
-            private int count;
-
-            public double Average => sum/(double)count;
-
-            public DrainInfo(int count, int sum)
-            {
-                this.count = count;
-                this.sum = sum;
-            }
-
-            public DrainInfo Add(int s)
-            {
-                return new DrainInfo(count + 1, sum + s);
-            }
-        }
-        private static volatile DrainInfo drainSizeInfo = new DrainInfo(0, 0);
-        private static volatile DrainInfo drainCountInfo = new DrainInfo(0, 0);
-
-        public static double AverageDrainSize => drainSizeInfo.Average;
-        public static double AverageDrainAttempts => drainCountInfo.Average;
-
+        
         private static void LogEvents()
         {
             var newSettings = Settings;
@@ -98,21 +74,13 @@ namespace Vostok.Logging.ConsoleLog
                 currentState.WaitForNoWriters();
             }
 
-            int cnt = 0;
             int eventsCount;
             do
             {
                 eventsCount = currentState.Events.Drain(currentState.TemporaryBuffer, 0, currentState.TemporaryBuffer.Length);
                 for (var i = 0; i < eventsCount; i++)
                     WriteEvent(currentState.TemporaryBuffer[i]);
-                drainSizeInfo = drainSizeInfo.Add(eventsCount);
-                cnt++;
             } while (eventsCount > 0);
-
-            drainCountInfo = drainCountInfo.Add(cnt);
-
-            foreach (var writer in MessageWriters)
-                writer.Value.Flush();
         }
 
         private static void WriteEvent(LogEventInfo currentEvent)
@@ -137,7 +105,7 @@ namespace Vostok.Logging.ConsoleLog
         {
             private volatile int writers;
             private volatile bool isClosedForWriting;
-            private volatile int lostEvents;
+            private volatile int eventsLost;
 
             public GlobalState(ConsoleLogGlobalSettings settings)
             {
@@ -153,7 +121,7 @@ namespace Vostok.Logging.ConsoleLog
 
             public BoundedBuffer<LogEventInfo> Events { get; }
 
-            public int LostEvents => lostEvents;
+            public int EventsLost => eventsLost;
 
             public void WaitForNoWriters()
             {
@@ -171,7 +139,7 @@ namespace Vostok.Logging.ConsoleLog
                 if (willAdd)
                 {
                     if (!Events.TryAdd(eventInfo))
-                        Interlocked.Increment(ref lostEvents);
+                        Interlocked.Increment(ref eventsLost);
                 }
 
                 Interlocked.Decrement(ref writers);

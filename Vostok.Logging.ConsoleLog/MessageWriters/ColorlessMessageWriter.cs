@@ -5,15 +5,11 @@ using Vostok.Logging.Core;
 
 namespace Vostok.Logging.ConsoleLog.MessageWriters
 {
-    // (krait): measured speed: ~23k messages/sec
-    // (krait): problem: can overlap with messages from ColoredWriter in a bad way
-    // (krait): ~17k messages/sec if flushed after each event, which solves the problem
+    // (krait): measured speed: ~17k messages/sec
     internal class ColorlessMessageWriter : IMessageWriter
     {
         private readonly TextWriter writer;
         private readonly ConversionPattern pattern;
-
-        private bool isDirty;
 
         public ColorlessMessageWriter(ConversionPattern pattern, int bufferSize)
         {
@@ -27,13 +23,6 @@ namespace Vostok.Logging.ConsoleLog.MessageWriters
         {
             pattern.Render(@event, writer);
             writer.Flush();
-            //isDirty = true;
-        }
-
-        public void Flush()
-        {
-            //if (isDirty)
-            //    writer.Flush();
         }
     }
 }

@@ -33,9 +33,7 @@ namespace Vostok.Logging.ConsoleLog
         {
         }
 
-        public static int LostEvents => ConsoleLogMuxer.LostEvents;
-        public static double AverageDrainSize => ConsoleLogMuxer.AverageDrainSize;
-        public static double AverageDrainAttempts => ConsoleLogMuxer.AverageDrainAttempts;
+        public static int EventsLost => ConsoleLogMuxer.EventsLost;
 
         public void Log(LogEvent @event)
         {

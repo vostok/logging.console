@@ -25,9 +25,5 @@ namespace Vostok.Logging.ConsoleLog.MessageWriters
             using (new ConsoleColorChanger(color))
                 pattern.Render(@event, Console.Out);
         }
-
-        public void Flush()
-        {
-        }
     }
 }
