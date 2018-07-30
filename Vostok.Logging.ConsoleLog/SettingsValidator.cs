@@ -1,6 +1,5 @@
 ﻿namespace Vostok.Logging.ConsoleLog
 {
-    // TODO(krait): Tests.
     internal static class SettingsValidator
     {
         public static void ValidateGlobalSettings(ConsoleLogGlobalSettings settings)

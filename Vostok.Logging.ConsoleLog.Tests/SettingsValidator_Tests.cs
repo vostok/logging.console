@@ -14,6 +14,32 @@ namespace Vostok.Logging.ConsoleLog.Tests
                 .Should().NotThrow();
         }
 
-        // TODO(krait): More tests.
+        [Test]
+        public void ValidateGlobalSettings_should_throw_exception_if_EventsQueueCapacity_is_not_positive()
+        {
+            var settings = new ConsoleLogGlobalSettings { EventsQueueCapacity = 0 };
+            new Action(() => SettingsValidator.ValidateGlobalSettings(settings))
+                .Should().Throw<ValidationException>();
+
+            settings.EventsQueueCapacity = -1;
+            new Action(() => SettingsValidator.ValidateGlobalSettings(settings))
+                .Should().Throw<ValidationException>();
+        }
+
+        [Test]
+        public void ValidateInstanceSettings_should_throw_exception_if_ConversionPattern_is_null()
+        {
+            var settings = new ConsoleLogSettings { ConversionPattern = null };
+            new Action(() => SettingsValidator.ValidateInstanceSettings(settings))
+                .Should().Throw<ValidationException>();
+        }
+
+        [Test]
+        public void ValidateInstanceSettings_should_throw_exception_if_ColorMapping_is_null()
+        {
+            var settings = new ConsoleLogSettings { ColorMapping = null };
+            new Action(() => SettingsValidator.ValidateInstanceSettings(settings))
+                .Should().Throw<ValidationException>();
+        }
     }
 }
