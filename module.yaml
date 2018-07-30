@@ -11,6 +11,7 @@ notests *default:
   deps:
     - vostok.logging.abstractions@dev
     - vostok.logging.core@dev
+    - vostok.commons.collections
 
 full-build > notests:
   build:
