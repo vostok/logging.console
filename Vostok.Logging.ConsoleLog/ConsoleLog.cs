@@ -4,7 +4,6 @@ using Vostok.Logging.Abstractions;
 
 namespace Vostok.Logging.ConsoleLog
 {
-    // TODO(krait): Tests: settings validation, global settings validation
     [PublicAPI]
     public class ConsoleLog : ILog
     {

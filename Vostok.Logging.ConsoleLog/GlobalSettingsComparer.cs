@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace Vostok.Logging.ConsoleLog
 {
-    // TODO(krait): Tests.
     internal class GlobalSettingsComparer : IEqualityComparer<ConsoleLogGlobalSettings>
     {
         public bool Equals(ConsoleLogGlobalSettings x, ConsoleLogGlobalSettings y) =>
