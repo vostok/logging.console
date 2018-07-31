@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using Vostok.Logging.Abstractions;
 using Vostok.Logging.Core;
 
 namespace Vostok.Logging.ConsoleLog
