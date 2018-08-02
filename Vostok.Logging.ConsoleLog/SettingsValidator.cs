@@ -10,8 +10,8 @@
 
         public static void ValidateInstanceSettings(ConsoleLogSettings settings)
         {
-            if (settings.ConversionPattern == null)
-                Fail($"{nameof(settings.ConversionPattern)} must not be null.");
+            if (settings.OutputTemplate == null)
+                Fail($"{nameof(settings.OutputTemplate)} must not be null.");
 
             if (settings.ColorMapping == null)
                 Fail($"{nameof(settings.ColorMapping)} must not be null.");

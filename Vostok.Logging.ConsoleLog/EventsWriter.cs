@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using Vostok.Logging.Core;
+using Vostok.Logging.Formatting;
 
 namespace Vostok.Logging.ConsoleLog
 {
@@ -53,12 +53,12 @@ namespace Vostok.Logging.ConsoleLog
 
                     using (new ConsoleColorChanger(color))
                     {
-                        WriteInternal(events, batchStart, batchEnd, settings.ConversionPattern);
+                        WriteInternal(events, batchStart, batchEnd, settings.OutputTemplate);
                     }
                 }
                 else
                 {
-                    WriteInternal(events, batchStart, batchEnd, settings.ConversionPattern);
+                    WriteInternal(events, batchStart, batchEnd, settings.OutputTemplate);
                 }
             }
             catch
@@ -67,10 +67,10 @@ namespace Vostok.Logging.ConsoleLog
             }
         }
 
-        private void WriteInternal(LogEventInfo[] events, int batchStart, int batchEnd, ConversionPattern pattern)
+        private void WriteInternal(LogEventInfo[] events, int batchStart, int batchEnd, OutputTemplate template)
         {
             for (var i = batchStart; i < batchEnd; i++)
-                pattern.Render(events[i].Event, writer);
+                LogEventFormatter.Format(events[i].Event, writer, template);
             writer.Flush();
         }
     }

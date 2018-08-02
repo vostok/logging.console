@@ -9,8 +9,9 @@ notests *default:
     - Vostok.Logging.ConsoleLog/bin/Release/netstandard2.0/Vostok.Logging.ConsoleLog.dll
 
   deps:
+    - vostok.logging.formatting
     - vostok.logging.abstractions@dev
-    - vostok.logging.core@dev
+    - vostok.commons.threading@dev
     - vostok.commons.collections
 
 full-build > notests:

@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using JetBrains.Annotations;
 using Vostok.Logging.Abstractions;
-using Vostok.Logging.Core;
+using Vostok.Logging.Formatting;
 
 namespace Vostok.Logging.ConsoleLog
 {
     [PublicAPI]
     public class ConsoleLogSettings
     {
-        public ConversionPattern ConversionPattern { get; set; } = ConversionPattern.Default;
+        public OutputTemplate OutputTemplate { get; set; } = OutputTemplate.Default;
 
         public Dictionary<LogLevel, ConsoleColor> ColorMapping { get; set; } = new Dictionary<LogLevel, ConsoleColor>
         {

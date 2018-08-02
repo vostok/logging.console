@@ -27,9 +27,9 @@ namespace Vostok.Logging.ConsoleLog.Tests
         }
 
         [Test]
-        public void ValidateInstanceSettings_should_throw_exception_if_ConversionPattern_is_null()
+        public void ValidateInstanceSettings_should_throw_exception_if_OutputTemplate_is_null()
         {
-            var settings = new ConsoleLogSettings { ConversionPattern = null };
+            var settings = new ConsoleLogSettings { OutputTemplate = null };
             new Action(() => SettingsValidator.ValidateInstanceSettings(settings))
                 .Should().Throw<ValidationException>();
         }

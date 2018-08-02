@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vostok.Commons.Collections;
-using Vostok.Commons.Synchronization;
+using Vostok.Commons.Threading.Atomic;
 using Vostok.Logging.Abstractions;
 
 #pragma warning disable 420

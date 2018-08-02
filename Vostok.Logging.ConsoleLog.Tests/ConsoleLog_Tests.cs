@@ -50,7 +50,7 @@ namespace Vostok.Logging.ConsoleLog.Tests
         {
             var settings = new ConsoleLogSettings()
             {
-                ConversionPattern = null,
+                OutputTemplate = null,
             };
 
             new Action(() => new ConsoleLog(settings)).Should().Throw<ValidationException>();
