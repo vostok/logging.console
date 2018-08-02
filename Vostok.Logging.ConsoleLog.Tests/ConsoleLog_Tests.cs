@@ -2,6 +2,9 @@
 using FluentAssertions;
 using NUnit.Framework;
 
+// ReSharper disable ObjectCreationAsStatement
+// ReSharper disable AssignNullToNotNullAttribute
+
 namespace Vostok.Logging.ConsoleLog.Tests
 {
     [TestFixture]
@@ -22,9 +25,11 @@ namespace Vostok.Logging.ConsoleLog.Tests
                 OutputBufferSize = 200,
             };
 
-            ConsoleLogMuxer.Settings.Should().NotBe(settings);
+            ConsoleLogMuxer.Settings.Should().NotBeSameAs(settings);
+
             ConsoleLog.UpdateGlobalSettings(settings);
-            ConsoleLogMuxer.Settings.Should().Be(settings);
+
+            ConsoleLogMuxer.Settings.Should().BeSameAs(settings);
         }
 
         [Test]
@@ -32,23 +37,18 @@ namespace Vostok.Logging.ConsoleLog.Tests
         {
             var settings = new ConsoleLogGlobalSettings
             {
-                EventsQueueCapacity = -100,
+                EventsQueueCapacity = -100
             };
 
             new Action(() => ConsoleLog.UpdateGlobalSettings(settings)).Should().Throw<ValidationException>();
-            ConsoleLogMuxer.Settings.Should().NotBe(settings);
-        }
 
-        [Test]
-        public void ConsoleLog_should_get_not_null_settings()
-        {
-            new Action(() => new ConsoleLog(null)).Should().Throw<ArgumentNullException>();
+            ConsoleLogMuxer.Settings.Should().NotBeSameAs(settings);
         }
 
         [Test]
         public void ConsoleLog_should_validate_settings()
         {
-            var settings = new ConsoleLogSettings()
+            var settings = new ConsoleLogSettings
             {
                 OutputTemplate = null,
             };

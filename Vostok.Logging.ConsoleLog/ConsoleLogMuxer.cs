@@ -11,7 +11,7 @@ namespace Vostok.Logging.ConsoleLog
 {
     internal static class ConsoleLogMuxer
     {
-        private static readonly IEqualityComparer<ConsoleLogGlobalSettings> SettingsComparer = new GlobalSettingsComparer();
+        private static readonly IEqualityComparer<ConsoleLogGlobalSettings> SettingsComparer = new ConsoleLogGlobalSettingsComparer();
 
         private static readonly AtomicBoolean IsInitialized;
 
