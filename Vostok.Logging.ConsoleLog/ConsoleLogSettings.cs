@@ -15,11 +15,11 @@ namespace Vostok.Logging.ConsoleLog
 
         public Dictionary<LogLevel, ConsoleColor> ColorMapping { get; set; } = new Dictionary<LogLevel, ConsoleColor>
         {
-            {LogLevel.Debug, ConsoleColor.Gray},
-            {LogLevel.Info, ConsoleColor.White},
-            {LogLevel.Warn, ConsoleColor.Yellow},
-            {LogLevel.Error, ConsoleColor.Red},
-            {LogLevel.Fatal, ConsoleColor.DarkRed}
+            [LogLevel.Debug] = ConsoleColor.Gray,
+            [LogLevel.Info] = ConsoleColor.White,
+            [LogLevel.Warn] = ConsoleColor.Yellow,
+            [LogLevel.Error] = ConsoleColor.Red,
+            [LogLevel.Fatal] = ConsoleColor.DarkRed,
         };
 
         public bool ColorsEnabled { get; set; } = true;
