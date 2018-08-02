@@ -26,11 +26,11 @@ namespace Vostok.Logging.ConsoleLog.Tests
         {
             var settings = new ConsoleLogGlobalSettings { EventsQueueCapacity = 0 };
             new Action(() => SettingsValidator.ValidateGlobalSettings(settings))
-                .Should().Throw<ValidationException>();
+                .Should().Throw<ArgumentOutOfRangeException>();
 
             settings.EventsQueueCapacity = -1;
             new Action(() => SettingsValidator.ValidateGlobalSettings(settings))
-                .Should().Throw<ValidationException>();
+                .Should().Throw<ArgumentOutOfRangeException>();
         }
 
         [Test]
@@ -45,7 +45,7 @@ namespace Vostok.Logging.ConsoleLog.Tests
         {
             var settings = new ConsoleLogSettings { OutputTemplate = null };
             new Action(() => SettingsValidator.ValidateInstanceSettings(settings))
-                .Should().Throw<ValidationException>();
+                .Should().Throw<ArgumentNullException>();
         }
 
         [Test]
@@ -53,7 +53,7 @@ namespace Vostok.Logging.ConsoleLog.Tests
         {
             var settings = new ConsoleLogSettings { ColorMapping = null };
             new Action(() => SettingsValidator.ValidateInstanceSettings(settings))
-                .Should().Throw<ValidationException>();
+                .Should().Throw<ArgumentNullException>();
         }
     }
 }

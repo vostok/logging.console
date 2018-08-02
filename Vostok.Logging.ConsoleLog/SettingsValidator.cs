@@ -10,7 +10,7 @@ namespace Vostok.Logging.ConsoleLog
                 throw new ArgumentNullException(nameof(settings));
 
             if (settings.EventsQueueCapacity <= 0)
-                Fail($"{nameof(settings.EventsQueueCapacity)} must be positive.");
+                throw new ArgumentOutOfRangeException(nameof(settings.EventsQueueCapacity), $"{nameof(settings.EventsQueueCapacity)} must be positive");
 
             return settings;
         }
@@ -21,15 +21,12 @@ namespace Vostok.Logging.ConsoleLog
                 throw new ArgumentNullException(nameof(settings));
 
             if (settings.OutputTemplate == null)
-                Fail($"{nameof(settings.OutputTemplate)} must not be null.");
+                throw new ArgumentNullException(nameof(settings.OutputTemplate));
 
             if (settings.ColorMapping == null)
-                Fail($"{nameof(settings.ColorMapping)} must not be null.");
+                throw new ArgumentNullException(nameof(settings.ColorMapping));
 
             return settings;
         }
-
-        private static void Fail(string message) =>
-            throw new ValidationException(message);
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using Vostok.Logging.Abstractions;
 
 namespace Vostok.Logging.ConsoleLog

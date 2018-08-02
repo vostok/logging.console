@@ -40,7 +40,7 @@ namespace Vostok.Logging.ConsoleLog.Tests
                 EventsQueueCapacity = -100
             };
 
-            new Action(() => ConsoleLog.UpdateGlobalSettings(settings)).Should().Throw<ValidationException>();
+            new Action(() => ConsoleLog.UpdateGlobalSettings(settings)).Should().Throw<ArgumentOutOfRangeException>();
 
             ConsoleLogMuxer.Settings.Should().NotBeSameAs(settings);
         }
@@ -53,7 +53,7 @@ namespace Vostok.Logging.ConsoleLog.Tests
                 OutputTemplate = null,
             };
 
-            new Action(() => new ConsoleLog(settings)).Should().Throw<ValidationException>();
+            new Action(() => new ConsoleLog(settings)).Should().Throw<ArgumentNullException>();
             ConsoleLogMuxer.Settings.Should().NotBe(settings);
         }
     }
