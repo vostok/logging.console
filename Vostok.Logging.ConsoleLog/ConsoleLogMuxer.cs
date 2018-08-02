@@ -93,7 +93,7 @@ namespace Vostok.Logging.ConsoleLog
                 Settings = settings;
 
                 TemporaryBuffer = new LogEventInfo[settings.EventsQueueCapacity];
-                Events = new BoundedBuffer<LogEventInfo>(settings.EventsQueueCapacity);
+                Events = new ConcurrentBoundedQueue<LogEventInfo>(settings.EventsQueueCapacity);
                 EventsWriter = new EventsWriter(settings.OutputBufferSize);
             }
 
@@ -101,7 +101,7 @@ namespace Vostok.Logging.ConsoleLog
 
             public LogEventInfo[] TemporaryBuffer { get; }
 
-            public BoundedBuffer<LogEventInfo> Events { get; }
+            public ConcurrentBoundedQueue<LogEventInfo> Events { get; }
 
             public EventsWriter EventsWriter { get; }
 

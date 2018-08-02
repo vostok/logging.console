@@ -36,7 +36,7 @@
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\BoundedBuffer.cs" Link="Collections\BoundedBuffer.cs" />
+    <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\ConcurrentBoundedQueue.cs" Link="Collections\ConcurrentBoundedQueue.cs" />
     <Compile Include="..\..\vostok.commons.threading\Vostok.Commons.Threading\Atomic\AtomicBoolean.cs" Link="Threading\AtomicBoolean.cs" />
   </ItemGroup>
   <ItemGroup>
