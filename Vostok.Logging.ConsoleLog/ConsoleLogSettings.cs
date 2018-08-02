@@ -17,7 +17,7 @@ namespace Vostok.Logging.ConsoleLog
             {LogLevel.Info, ConsoleColor.White},
             {LogLevel.Warn, ConsoleColor.Yellow},
             {LogLevel.Error, ConsoleColor.Red},
-            {LogLevel.Fatal, ConsoleColor.Red}
+            {LogLevel.Fatal, ConsoleColor.DarkRed}
         };
 
         public bool ColorsEnabled { get; set; } = true;
