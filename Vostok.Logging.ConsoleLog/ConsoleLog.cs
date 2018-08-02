@@ -7,17 +7,13 @@ namespace Vostok.Logging.ConsoleLog
     [PublicAPI]
     public class ConsoleLog : ILog
     {
-        public static void UpdateGlobalSettings([NotNull] ConsoleLogGlobalSettings newSettings)
-        {
+        public static void UpdateGlobalSettings([NotNull] ConsoleLogGlobalSettings newSettings) =>
             ConsoleLogMuxer.Settings = SettingsValidator.ValidateGlobalSettings(newSettings);
-        }
 
         private readonly ConsoleLogSettings settings;
 
-        public ConsoleLog([NotNull] ConsoleLogSettings settings)
-        {
+        public ConsoleLog([NotNull] ConsoleLogSettings settings) =>
             this.settings = SettingsValidator.ValidateInstanceSettings(settings);
-        }
 
         public ConsoleLog()
             : this(new ConsoleLogSettings())
