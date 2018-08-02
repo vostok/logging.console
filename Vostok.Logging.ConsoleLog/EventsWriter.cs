@@ -53,12 +53,12 @@ namespace Vostok.Logging.ConsoleLog
 
                     using (new ConsoleColorChanger(color))
                     {
-                        WriteInternal(events, batchStart, batchEnd, settings.OutputTemplate);
+                        WriteInternal(events, batchStart, batchEnd, settings.OutputTemplate, settings.FormatProvider);
                     }
                 }
                 else
                 {
-                    WriteInternal(events, batchStart, batchEnd, settings.OutputTemplate);
+                    WriteInternal(events, batchStart, batchEnd, settings.OutputTemplate, settings.FormatProvider);
                 }
             }
             catch
@@ -67,10 +67,10 @@ namespace Vostok.Logging.ConsoleLog
             }
         }
 
-        private void WriteInternal(LogEventInfo[] events, int batchStart, int batchEnd, OutputTemplate template)
+        private void WriteInternal(LogEventInfo[] events, int batchStart, int batchEnd, OutputTemplate template, IFormatProvider formatProvider)
         {
             for (var i = batchStart; i < batchEnd; i++)
-                LogEventFormatter.Format(events[i].Event, writer, template);
+                LogEventFormatter.Format(events[i].Event, writer, template, formatProvider);
             writer.Flush();
         }
     }

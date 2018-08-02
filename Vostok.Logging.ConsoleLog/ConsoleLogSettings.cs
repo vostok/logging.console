@@ -11,6 +11,8 @@ namespace Vostok.Logging.ConsoleLog
     {
         public OutputTemplate OutputTemplate { get; set; } = OutputTemplate.Default;
 
+        public IFormatProvider FormatProvider { get; set; }
+
         public Dictionary<LogLevel, ConsoleColor> ColorMapping { get; set; } = new Dictionary<LogLevel, ConsoleColor>
         {
             {LogLevel.Debug, ConsoleColor.Gray},
