@@ -37,6 +37,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\BoundedBuffer.cs" Link="Collections\BoundedBuffer.cs" />
+    <Compile Include="..\..\vostok.commons.threading\Vostok.Commons.Threading\Atomic\AtomicBoolean.cs" Link="Threading\AtomicBoolean.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Vostok.Logging.Abstractions">
@@ -50,5 +51,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Collections\" />
+    <Folder Include="Threading\" />
   </ItemGroup>
 </Project>

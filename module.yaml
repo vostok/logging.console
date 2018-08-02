@@ -11,8 +11,8 @@ notests *default:
   deps:
     - vostok.logging.formatting
     - vostok.logging.abstractions@dev
-    - vostok.commons.threading@dev
-    - vostok.commons.collections
+    - vostok.commons.threading/src
+    - vostok.commons.collections/src
 
 full-build > notests:
   build:
