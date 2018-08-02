@@ -9,22 +9,14 @@ namespace Vostok.Logging.ConsoleLog
     {
         public static void UpdateGlobalSettings([NotNull] ConsoleLogGlobalSettings newSettings)
         {
-            if (newSettings == null)
-                throw new ArgumentNullException(nameof(settings));
-
-            SettingsValidator.ValidateGlobalSettings(newSettings);
-            ConsoleLogMuxer.Settings = newSettings;
+            ConsoleLogMuxer.Settings = SettingsValidator.ValidateGlobalSettings(newSettings);
         }
 
         private readonly ConsoleLogSettings settings;
 
         public ConsoleLog([NotNull] ConsoleLogSettings settings)
         {
-            if (settings == null)
-                throw new ArgumentNullException(nameof(settings));
-
-            SettingsValidator.ValidateInstanceSettings(settings);
-            this.settings = settings;
+            this.settings = SettingsValidator.ValidateInstanceSettings(settings);
         }
 
         public ConsoleLog()

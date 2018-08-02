@@ -15,6 +15,13 @@ namespace Vostok.Logging.ConsoleLog.Tests
         }
 
         [Test]
+        public void ValidateGlobalSettings_should_throw_exception_on_null_settings()
+        {
+            new Action(() => SettingsValidator.ValidateGlobalSettings(null))
+                .Should().Throw<ArgumentNullException>();
+        }
+
+        [Test]
         public void ValidateGlobalSettings_should_throw_exception_if_EventsQueueCapacity_is_not_positive()
         {
             var settings = new ConsoleLogGlobalSettings { EventsQueueCapacity = 0 };
@@ -24,6 +31,13 @@ namespace Vostok.Logging.ConsoleLog.Tests
             settings.EventsQueueCapacity = -1;
             new Action(() => SettingsValidator.ValidateGlobalSettings(settings))
                 .Should().Throw<ValidationException>();
+        }
+
+        [Test]
+        public void ValidateInstanceSettings_should_throw_exception_on_null_settings()
+        {
+            new Action(() => SettingsValidator.ValidateInstanceSettings(null))
+                .Should().Throw<ArgumentNullException>();
         }
 
         [Test]
