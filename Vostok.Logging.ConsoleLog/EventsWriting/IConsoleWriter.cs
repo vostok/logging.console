@@ -1,4 +1,4 @@
-﻿namespace Vostok.Logging.ConsoleLog
+﻿namespace Vostok.Logging.ConsoleLog.EventsWriting
 {
     internal interface IConsoleWriter
     {

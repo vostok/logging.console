@@ -6,8 +6,9 @@ using NSubstitute;
 using NSubstitute.Core;
 using NUnit.Framework;
 using Vostok.Logging.Abstractions;
+using Vostok.Logging.ConsoleLog.EventsWriting;
 
-namespace Vostok.Logging.ConsoleLog.Tests
+namespace Vostok.Logging.ConsoleLog.Tests.EventsWriting
 {
     [TestFixture]
     internal class EventsWriter_Tests

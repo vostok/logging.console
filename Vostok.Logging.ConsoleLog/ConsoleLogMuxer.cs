@@ -2,8 +2,7 @@
 using System.Threading.Tasks;
 using Vostok.Commons.Collections;
 using Vostok.Logging.Abstractions;
-
-#pragma warning disable 420
+using Vostok.Logging.ConsoleLog.EventsWriting;
 
 namespace Vostok.Logging.ConsoleLog
 {
@@ -41,6 +40,10 @@ namespace Vostok.Logging.ConsoleLog
             }
 
             return true;
+        }
+
+        public void Flush()
+        {
         }
 
         private void StartLoggingTask()

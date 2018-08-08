@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Vostok.Logging.ConsoleLog
+namespace Vostok.Logging.ConsoleLog.EventsWriting
 {
     // (krait): measured speed:
     // (krait): - small batches: ~16k messages/sec with colors, ~8.5k messages/sec without colors

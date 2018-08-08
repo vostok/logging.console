@@ -2,7 +2,7 @@
 using System.IO;
 using Vostok.Logging.Formatting;
 
-namespace Vostok.Logging.ConsoleLog
+namespace Vostok.Logging.ConsoleLog.EventsWriting
 {
     internal class ConsoleWriter : IConsoleWriter
     {
@@ -11,10 +11,10 @@ namespace Vostok.Logging.ConsoleLog
         public ConsoleWriter(int bufferSize)
         {
             var stream = Console.OpenStandardOutput(bufferSize);
-            writer = new StreamWriter(stream, Console.OutputEncoding, bufferSize, true) { AutoFlush = false };
+            writer = new StreamWriter(stream, Console.OutputEncoding, bufferSize, true) {AutoFlush = false};
         }
 
-        public void WriteLogEvent(LogEventInfo eventInfo) => 
+        public void WriteLogEvent(LogEventInfo eventInfo) =>
             LogEventFormatter.Format(eventInfo.Event, writer, eventInfo.Settings.OutputTemplate, eventInfo.Settings.FormatProvider);
 
         public void Flush() => writer.Flush();

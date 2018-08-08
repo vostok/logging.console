@@ -3,8 +3,9 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using Vostok.Logging.Abstractions;
+using Vostok.Logging.ConsoleLog.EventsWriting;
 
-namespace Vostok.Logging.ConsoleLog.Tests
+namespace Vostok.Logging.ConsoleLog.Tests.EventsWriting
 {
     [TestFixture]
     internal class EventsBatcher_Tests

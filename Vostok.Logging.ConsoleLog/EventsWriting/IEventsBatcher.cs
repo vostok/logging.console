@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Vostok.Logging.ConsoleLog
+namespace Vostok.Logging.ConsoleLog.EventsWriting
 {
     internal interface IEventsBatcher
     {

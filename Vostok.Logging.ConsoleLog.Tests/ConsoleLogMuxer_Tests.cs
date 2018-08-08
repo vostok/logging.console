@@ -3,8 +3,9 @@ using FluentAssertions;
 using FluentAssertions.Extensions;
 using NSubstitute;
 using NUnit.Framework;
-using Vostok.Commons.Testing.Testing;
+using Vostok.Commons.Testing;
 using Vostok.Logging.Abstractions;
+using Vostok.Logging.ConsoleLog.EventsWriting;
 
 namespace Vostok.Logging.ConsoleLog.Tests
 {

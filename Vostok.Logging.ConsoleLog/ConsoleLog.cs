@@ -7,10 +7,12 @@ namespace Vostok.Logging.ConsoleLog
     [PublicAPI]
     public class ConsoleLog : ILog
     {
-        private static readonly ConsoleLogMuxerProvider muxerProvider = new ConsoleLogMuxerProvider();
+        private static readonly ConsoleLogMuxerProvider MuxerProvider = new ConsoleLogMuxerProvider();
 
         public static void UpdateGlobalSettings([NotNull] ConsoleLogGlobalSettings newSettings) =>
-            muxerProvider.UpdateSettings(newSettings);
+            MuxerProvider.UpdateSettings(newSettings);
+
+        public static void Flush() => MuxerProvider.ObtainMuxer().Flush();
 
         private readonly ConsoleLogSettings settings;
         private long eventsLost;
@@ -25,14 +27,14 @@ namespace Vostok.Logging.ConsoleLog
 
         public long EventsLost => Interlocked.Read(ref eventsLost);
 
-        public static long TotalEventsLost => muxerProvider.ObtainMuxer().EventsLost;
+        public static long TotalEventsLost => MuxerProvider.ObtainMuxer().EventsLost;
 
         public void Log(LogEvent @event)
         {
             if (@event == null)
                 return;
 
-            if (!muxerProvider.ObtainMuxer().TryLog(@event, settings))
+            if (!MuxerProvider.ObtainMuxer().TryLog(@event, settings))
                 Interlocked.Increment(ref eventsLost);
         }
 

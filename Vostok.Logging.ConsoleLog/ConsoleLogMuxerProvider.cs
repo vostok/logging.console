@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using Vostok.Logging.ConsoleLog.EventsWriting;
 
 namespace Vostok.Logging.ConsoleLog
 {
