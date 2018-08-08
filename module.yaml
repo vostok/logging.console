@@ -11,10 +11,11 @@ notests *default:
   deps:
     - vostok.logging.formatting
     - vostok.logging.abstractions
-    - vostok.commons.threading/src
     - vostok.commons.collections/src
 
 full-build > notests:
+  deps:
+    - vostok.commons.testing
   build:
     target: Vostok.Logging.ConsoleLog.sln
     configuration: Release

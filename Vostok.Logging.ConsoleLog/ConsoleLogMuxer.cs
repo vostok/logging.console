@@ -1,47 +1,49 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Vostok.Commons.Collections;
-using Vostok.Commons.Threading.Atomic;
 using Vostok.Logging.Abstractions;
 
 #pragma warning disable 420
 
 namespace Vostok.Logging.ConsoleLog
 {
-    internal static class ConsoleLogMuxer
+    internal class ConsoleLogMuxer
     {
-        private static readonly IEqualityComparer<ConsoleLogGlobalSettings> SettingsComparer = new ConsoleLogGlobalSettingsComparer();
+        private readonly object initLock = new object();
+        private readonly IEventsWriter eventsWriter;
 
-        private static readonly AtomicBoolean IsInitialized;
+        private readonly ConcurrentBoundedQueue<LogEventInfo> events;
+        private readonly LogEventInfo[] temporaryBuffer;
 
-        private static volatile GlobalState state;
+        private bool isInitialized;
+        private long eventsLost;
 
-        static ConsoleLogMuxer()
+        public ConsoleLogMuxer(IEventsWriter eventsWriter, int eventsQueueCapacity)
         {
-            IsInitialized = new AtomicBoolean(false);
-
-            Settings = new ConsoleLogGlobalSettings();
-            state = new GlobalState(Settings);
+            this.eventsWriter = eventsWriter;
+            temporaryBuffer = new LogEventInfo[eventsQueueCapacity];
+            events = new ConcurrentBoundedQueue<LogEventInfo>(eventsQueueCapacity);
         }
 
-        public static void Log(LogEvent @event, ConsoleLogSettings settings)
+        public long EventsLost => Interlocked.Read(ref eventsLost);
+
+        public bool TryLog(LogEvent @event, ConsoleLogSettings settings)
         {
-            if (!IsInitialized)
+            if (!isInitialized)
                 Initialize();
 
             var eventInfo = new LogEventInfo(@event, settings);
 
-            var currentState = state;
-            while (!currentState.TryAddEvent(eventInfo))
-                currentState = state;
+            if (!events.TryAdd(eventInfo))
+            {
+                Interlocked.Increment(ref eventsLost);
+                return false;
+            }
+
+            return true;
         }
 
-        public static int EventsLost => state.EventsLost;
-
-        public static ConsoleLogGlobalSettings Settings { get; set; }
-
-        private static void StartLoggingTask()
+        private void StartLoggingTask()
         {
             Task.Run(
                 async () =>
@@ -50,88 +52,29 @@ namespace Vostok.Logging.ConsoleLog
                     {
                         LogEvents();
 
-                        if (state.Events.Count == 0)
-                            await state.Events.WaitForNewItemsAsync();
+                        if (events.Count == 0)
+                            await events.WaitForNewItemsAsync();
                     }
                 });
         }
 
-        private static void LogEvents()
+        private void LogEvents()
         {
-            var newSettings = Settings;
+            var eventsCount = events.Drain(temporaryBuffer, 0, temporaryBuffer.Length);
 
-            var currentState = state;
-            if (!SettingsComparer.Equals(newSettings, state.Settings))
-            {
-                currentState.CloseForWriting();
-                state = new GlobalState(newSettings);
-                currentState.WaitForNoWriters();
-            }
-
-            int eventsCount;
-            do
-            {
-                eventsCount = currentState.Events.Drain(currentState.TemporaryBuffer, 0, currentState.TemporaryBuffer.Length);
-                currentState.EventsWriter.WriteEvents(currentState.TemporaryBuffer, eventsCount);
-            } while (eventsCount > 0 && currentState != state);
+            eventsWriter.WriteEvents(temporaryBuffer, eventsCount);
         }
 
-        private static void Initialize()
+        private void Initialize()
         {
-            if (IsInitialized.TrySetTrue())
-                StartLoggingTask();
-        }
-
-        private class GlobalState
-        {
-            private volatile int writers;
-            private volatile bool isClosedForWriting;
-            private volatile int eventsLost;
-
-            public GlobalState(ConsoleLogGlobalSettings settings)
+            lock (initLock)
             {
-                Settings = settings;
-
-                TemporaryBuffer = new LogEventInfo[settings.EventsQueueCapacity];
-                Events = new ConcurrentBoundedQueue<LogEventInfo>(settings.EventsQueueCapacity);
-                EventsWriter = new EventsWriter(settings.OutputBufferSize);
-            }
-
-            public ConsoleLogGlobalSettings Settings { get; }
-
-            public LogEventInfo[] TemporaryBuffer { get; }
-
-            public ConcurrentBoundedQueue<LogEventInfo> Events { get; }
-
-            public EventsWriter EventsWriter { get; }
-
-            public int EventsLost => eventsLost;
-
-            public void WaitForNoWriters()
-            {
-                var spinWait = new SpinWait();
-
-                while (writers > 0)
-                    spinWait.SpinOnce();
-            }
-
-            public bool TryAddEvent(LogEventInfo eventInfo)
-            {
-                Interlocked.Increment(ref writers);
-
-                var willAdd = !isClosedForWriting;
-                if (willAdd)
+                if (!isInitialized)
                 {
-                    if (!Events.TryAdd(eventInfo))
-                        Interlocked.Increment(ref eventsLost);
+                    StartLoggingTask();
+                    isInitialized = true;
                 }
-
-                Interlocked.Decrement(ref writers);
-
-                return willAdd;
             }
-
-            public void CloseForWriting() => isClosedForWriting = true;
         }
     }
 }
