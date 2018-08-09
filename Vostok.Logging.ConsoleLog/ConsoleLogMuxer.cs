@@ -8,6 +8,7 @@ namespace Vostok.Logging.ConsoleLog
 {
     internal class ConsoleLogMuxer
     {
+        private readonly AsyncManualResetEvent iterationCompleted = new AsyncManualResetEvent(true);
         private readonly object initLock = new object();
         private readonly IEventsWriter eventsWriter;
 
@@ -31,6 +32,8 @@ namespace Vostok.Logging.ConsoleLog
             if (!isInitialized)
                 Initialize();
 
+            iterationCompleted.Reset();
+
             var eventInfo = new LogEventInfo(@event, settings);
 
             if (!events.TryAdd(eventInfo))
@@ -42,9 +45,7 @@ namespace Vostok.Logging.ConsoleLog
             return true;
         }
 
-        public void Flush()
-        {
-        }
+        public Task FlushAsync() => iterationCompleted.WaitAsync();
 
         private void StartLoggingTask()
         {
@@ -54,6 +55,8 @@ namespace Vostok.Logging.ConsoleLog
                     while (true)
                     {
                         LogEvents();
+
+                        iterationCompleted.Set();
 
                         if (events.Count == 0)
                             await events.WaitForNewItemsAsync();
