@@ -41,6 +41,7 @@ namespace Vostok.Logging.ConsoleLog
 
         public bool IsEnabledFor(LogLevel level) => true;
 
-        public ILog ForContext(string context) => this;
+        public ILog ForContext([NotNull] string context) => 
+            string.IsNullOrEmpty(context) ? this : this.WithProperty(WellKnownProperties.SourceContext, context, true);
     }
 }
