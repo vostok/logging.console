@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Vostok.Logging.Abstractions;
 
@@ -12,7 +13,7 @@ namespace Vostok.Logging.ConsoleLog
         public static void UpdateGlobalSettings([NotNull] ConsoleLogGlobalSettings newSettings) =>
             MuxerProvider.UpdateSettings(newSettings);
 
-        public static void Flush() => MuxerProvider.ObtainMuxer().Flush();
+        public static Task FlushAsync() => MuxerProvider.ObtainMuxer().FlushAsync();
 
         private readonly ConsoleLogSettings settings;
         private long eventsLost;
