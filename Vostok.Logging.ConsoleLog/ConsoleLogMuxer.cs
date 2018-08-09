@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Vostok.Commons.Collections;
 using Vostok.Logging.Abstractions;
@@ -17,6 +18,7 @@ namespace Vostok.Logging.ConsoleLog
 
         private bool isInitialized;
         private long eventsLost;
+        private long eventsLostSinceLastIteration;
 
         public ConsoleLogMuxer(IEventsWriter eventsWriter, int eventsQueueCapacity)
         {
@@ -69,6 +71,22 @@ namespace Vostok.Logging.ConsoleLog
             var eventsCount = events.Drain(temporaryBuffer, 0, temporaryBuffer.Length);
 
             eventsWriter.WriteEvents(temporaryBuffer, eventsCount);
+
+            var currentEventsLost = EventsLost;
+            if (currentEventsLost > eventsLostSinceLastIteration)
+            {
+                temporaryBuffer[0] = CreateOverflowEvent(currentEventsLost - eventsLostSinceLastIteration);
+                eventsWriter.WriteEvents(temporaryBuffer, 1);
+
+                eventsLostSinceLastIteration = currentEventsLost;
+            }
+        }
+
+        private LogEventInfo CreateOverflowEvent(long discardedEvents)
+        {
+            var message = $"[{nameof(ConsoleLog)}] Buffer overflow. {discardedEvents} log events were lost (events queue capacity = {events.Capacity}).";
+
+            return new LogEventInfo(new LogEvent(LogLevel.Warn, DateTimeOffset.Now, message), new ConsoleLogSettings());
         }
 
         private void Initialize()

@@ -2,8 +2,8 @@
 {
     internal interface IConsoleWriter
     {
-        void Flush();
-
         void WriteLogEvent(LogEventInfo eventInfo);
+
+        void Flush();
     }
 }
