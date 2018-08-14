@@ -21,6 +21,6 @@ namespace Vostok.Logging.Console
         }
 
         private static ConsoleLogMuxer CreateMuxer(ConsoleLogGlobalSettings settings) =>
-            new ConsoleLogMuxer(new EventsWriter(new EventsBatcher(), new ConsoleWriter(settings.OutputBufferSize)), settings.EventsQueueCapacity);
+            new ConsoleLogMuxer(new EventsWriter(new EventsBatcher(), new ConsoleWriterProvider(settings.OutputBufferSize)), settings.EventsQueueCapacity);
     }
 }

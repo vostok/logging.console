@@ -9,21 +9,23 @@ namespace Vostok.Logging.Console.EventsWriting
     internal class EventsWriter : IEventsWriter
     {
         private readonly IEventsBatcher batcher;
-        private readonly IConsoleWriter consoleWriter;
+        private readonly IConsoleWriterProvider consoleWriterProvider;
 
-        public EventsWriter(IEventsBatcher batcher, IConsoleWriter consoleWriter)
+        public EventsWriter(IEventsBatcher batcher, IConsoleWriterProvider consoleWriterProvider)
         {
             this.batcher = batcher;
-            this.consoleWriter = consoleWriter;
+            this.consoleWriterProvider = consoleWriterProvider;
         }
 
         public void WriteEvents(LogEventInfo[] events, int eventsCount)
         {
+            var writer = consoleWriterProvider.ObtainWriter();
+
             foreach (var batch in batcher.BatchEvents(events, eventsCount))
-                WriteBatch(batch);
+                WriteBatch(batch, writer);
         }
 
-        private void WriteBatch(IList<LogEventInfo> batch)
+        private static void WriteBatch(IList<LogEventInfo> batch, IConsoleWriter writer)
         {
             var settings = batch[0].Settings;
             if (settings.ColorsEnabled)
@@ -31,24 +33,24 @@ namespace Vostok.Logging.Console.EventsWriting
                 if (!settings.ColorMapping.TryGetValue(batch[0].Event.Level, out var color))
                     color = ConsoleColor.Gray;
 
-                using (consoleWriter.ChangeColor(color))
+                using (writer.ChangeColor(color))
                 {
-                    WriteBatchInternal(batch);
+                    WriteBatchInternal(batch, writer);
                 }
             }
             else
             {
-                WriteBatchInternal(batch);
+                WriteBatchInternal(batch, writer);
             }
         }
 
-        private void WriteBatchInternal(IEnumerable<LogEventInfo> batch)
+        private static void WriteBatchInternal(IEnumerable<LogEventInfo> batch, IConsoleWriter writer)
         {
             foreach (var eventInfo in batch)
             {
                 try
                 {
-                    consoleWriter.WriteLogEvent(eventInfo);
+                    writer.WriteLogEvent(eventInfo);
                 }
                 catch
                 {
@@ -56,7 +58,7 @@ namespace Vostok.Logging.Console.EventsWriting
                 }
             }
 
-            consoleWriter.Flush();
+            writer.Flush();
         }
     }
 }

@@ -10,6 +10,7 @@ namespace Vostok.Logging.Console.Tests
     [TestFixture]
     public class AsyncManualResetEvent_Tests_Smoke
     {
+        [Explicit]
         [TestCase(1, 1, 0)]
         [TestCase(4, 4, 4)]
         [TestCase(2, 1, 6)]

@@ -16,6 +16,7 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
         private EventsWriter writer;
         private IEventsBatcher batcher;
         private IConsoleWriter consoleWriter;
+        private IDisposable colorReleaser;
 
         [SetUp]
         public void TestSetup()
@@ -24,7 +25,14 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
             batcher.BatchEvents(Arg.Any<LogEventInfo[]>(), Arg.Any<int>()).Returns(MakeBatch);
 
             consoleWriter = Substitute.For<IConsoleWriter>();
-            writer = new EventsWriter(batcher, consoleWriter);
+
+            colorReleaser = Substitute.For<IDisposable>();
+            consoleWriter.ChangeColor(Arg.Any<ConsoleColor>()).Returns(_ => colorReleaser);
+
+            var consoleWriterProvider = Substitute.For<IConsoleWriterProvider>();
+            consoleWriterProvider.ObtainWriter().Returns(_ => consoleWriter);
+
+            writer = new EventsWriter(batcher, consoleWriterProvider);
         }
 
         [Test]
@@ -68,6 +76,37 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
         }
 
         [Test]
+        public void Should_change_color_around_batch_if_colors_enabled()
+        {
+            batcher.BatchEvents(Arg.Any<LogEventInfo[]>(), Arg.Any<int>())
+                .Returns(callInfo => MakeBatch(callInfo).Concat(MakeBatch(callInfo)));
+
+            writer.WriteEvents(new[] { CreateLogEventInfo(), CreateLogEventInfo() }, 2);
+
+            Received.InOrder(
+                () =>
+                {
+                    consoleWriter.ChangeColor(ConsoleColor.White);
+                    consoleWriter.WriteLogEvent(Arg.Any<LogEventInfo>());
+                    consoleWriter.WriteLogEvent(Arg.Any<LogEventInfo>());
+                    colorReleaser.Dispose();
+                    consoleWriter.ChangeColor(ConsoleColor.White);
+                    consoleWriter.WriteLogEvent(Arg.Any<LogEventInfo>());
+                    consoleWriter.WriteLogEvent(Arg.Any<LogEventInfo>());
+                    colorReleaser.Dispose();
+                });
+        }
+
+        [Test]
+        public void Should_not_change_color_around_batch_if_colors_disabled()
+        {
+            var settings = new ConsoleLogSettings {ColorsEnabled = false};
+            writer.WriteEvents(new[] { CreateLogEventInfo(settings), CreateLogEventInfo(settings) }, 2);
+
+            consoleWriter.DidNotReceive().ChangeColor(Arg.Any<ConsoleColor>());
+        }
+
+        [Test]
         public void Should_not_write_anything_if_there_are_no_batches()
         {
             batcher.BatchEvents(Arg.Any<LogEventInfo[]>(), Arg.Any<int>())
@@ -78,9 +117,9 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
             consoleWriter.DidNotReceive().WriteLogEvent(Arg.Any<LogEventInfo>());
         }
 
-        private static LogEventInfo CreateLogEventInfo()
+        private static LogEventInfo CreateLogEventInfo(ConsoleLogSettings settings = null)
         {
-            return new LogEventInfo(new LogEvent(LogLevel.Info, DateTimeOffset.Now, ""), new ConsoleLogSettings());
+            return new LogEventInfo(new LogEvent(LogLevel.Info, DateTimeOffset.Now, ""), settings ?? new ConsoleLogSettings());
         }
 
         private static IEnumerable<ArraySegment<LogEventInfo>> MakeBatch(CallInfo callInfo)

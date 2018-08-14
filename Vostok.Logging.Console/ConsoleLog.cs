@@ -76,6 +76,6 @@ namespace Vostok.Logging.Console
         /// Puts the given <paramref name="context" /> string into <see cref="F:Vostok.Logging.Abstractions.WellKnownProperties.SourceContext" /> property of all events logged by this instance.
         /// </summary>
         public ILog ForContext([NotNull] string context) => 
-            string.IsNullOrEmpty(context) ? this : this.WithProperty(WellKnownProperties.SourceContext, context, true);
+            this.WithProperty(WellKnownProperties.SourceContext, context, true);
     }
 }

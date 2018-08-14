@@ -6,22 +6,13 @@ namespace Vostok.Logging.Console.EventsWriting
 {
     internal class ConsoleWriter : IConsoleWriter
     {
-        private readonly IConsoleColorChanger colorChanger;
         private readonly TextWriter writer;
+        private readonly IConsoleColorChanger colorChanger;
 
-        public ConsoleWriter(int bufferSize)
+        public ConsoleWriter(TextWriter writer, IConsoleColorChanger colorChanger)
         {
-            if (System.Console.IsOutputRedirected)
-            {
-                writer = System.Console.Out;
-                colorChanger = new FakeConsoleColorChanger();
-            }
-            else
-            {
-                var stream = System.Console.OpenStandardOutput(bufferSize);
-                writer = new StreamWriter(stream, System.Console.OutputEncoding, bufferSize, true) {AutoFlush = false};
-                colorChanger = new ConsoleColorChanger();
-            }
+            this.writer = writer;
+            this.colorChanger = colorChanger;
         }
 
         public void WriteLogEvent(LogEventInfo eventInfo) =>
