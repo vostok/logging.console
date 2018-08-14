@@ -7,6 +7,9 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\..\vostok.commons.testing\Vostok.Commons.Testing\AssertionAssertions.cs" Link="Commons\AssertionAssertions.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="5.4.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0-preview-20180610-02" />
     <PackageReference Include="NSubstitute" Version="3.1.0" />
@@ -25,10 +28,6 @@
     <Reference Include="Vostok.Logging.Formatting">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\vostok.logging.formatting\Vostok.Logging.Formatting\bin\Release\netstandard2.0\Vostok.Logging.Formatting.dll</HintPath>
-    </Reference>
-    <Reference Include="Vostok.Commons.Testing">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\vostok.commons.testing\Vostok.Commons.Testing\bin\Release\netstandard2.0\Vostok.Commons.Testing.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
