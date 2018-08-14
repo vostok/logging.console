@@ -31,7 +31,7 @@ namespace Vostok.Logging.Console.EventsWriting
                 if (!settings.ColorMapping.TryGetValue(batch[0].Event.Level, out var color))
                     color = ConsoleColor.Gray;
 
-                using (new ConsoleColorChanger(color))
+                using (consoleWriter.ChangeColor(color))
                 {
                     WriteBatchInternal(batch);
                 }

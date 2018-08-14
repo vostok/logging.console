@@ -2,12 +2,8 @@
 
 namespace Vostok.Logging.Console.EventsWriting
 {
-    internal interface IConsoleWriter
+    internal interface IConsoleColorChanger : IDisposable
     {
-        void WriteLogEvent(LogEventInfo eventInfo);
-
         IDisposable ChangeColor(ConsoleColor newColor);
-
-        void Flush();
     }
 }

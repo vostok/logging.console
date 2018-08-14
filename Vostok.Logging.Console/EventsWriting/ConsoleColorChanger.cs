@@ -1,15 +1,16 @@
 ﻿using System;
 
-namespace Vostok.Logging.Console
+namespace Vostok.Logging.Console.EventsWriting
 {
-    internal struct ConsoleColorChanger : IDisposable
+    internal class ConsoleColorChanger : IConsoleColorChanger
     {
-        private readonly ConsoleColor oldColor;
+        private ConsoleColor oldColor;
 
-        public ConsoleColorChanger(ConsoleColor newColor)
+        public IDisposable ChangeColor(ConsoleColor newColor)
         {
             oldColor = System.Console.ForegroundColor;
             System.Console.ForegroundColor = newColor;
+            return this;
         }
 
         public void Dispose() =>
