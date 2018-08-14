@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27428.2011
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vostok.Logging.Console.Tests", "Vostok.Logging.Console.Tests\Vostok.Logging.Console.Tests.csproj", "{E75AF6DD-7DD3-4D23-96CA-7AB9B97497DD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vostok.Logging.Console", "Vostok.Logging.Console\Vostok.Logging.Console.csproj", "{D3B89D4B-4B08-4142-A426-DAD9B6EEB05F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		NoTests|Any CPU = NoTests|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E75AF6DD-7DD3-4D23-96CA-7AB9B97497DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E75AF6DD-7DD3-4D23-96CA-7AB9B97497DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E75AF6DD-7DD3-4D23-96CA-7AB9B97497DD}.NoTests|Any CPU.ActiveCfg = Release|Any CPU
+		{E75AF6DD-7DD3-4D23-96CA-7AB9B97497DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E75AF6DD-7DD3-4D23-96CA-7AB9B97497DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3B89D4B-4B08-4142-A426-DAD9B6EEB05F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3B89D4B-4B08-4142-A426-DAD9B6EEB05F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3B89D4B-4B08-4142-A426-DAD9B6EEB05F}.NoTests|Any CPU.ActiveCfg = Release|Any CPU
+		{D3B89D4B-4B08-4142-A426-DAD9B6EEB05F}.NoTests|Any CPU.Build.0 = Release|Any CPU
+		{D3B89D4B-4B08-4142-A426-DAD9B6EEB05F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3B89D4B-4B08-4142-A426-DAD9B6EEB05F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {579E5AB3-D57F-47D7-A3C3-6B25E63085D7}
+	EndGlobalSection
+EndGlobal
