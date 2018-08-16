@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Vostok.Logging.Abstractions;
+using Vostok.Logging.Abstractions.Wrappers;
 
 namespace Vostok.Logging.Console
 {
@@ -74,7 +75,7 @@ namespace Vostok.Logging.Console
         /// <summary>
         /// Returns a log based on this <see cref="ConsoleLog"/> instance that puts given <paramref name="context" /> string into <see cref="F:Vostok.Logging.Abstractions.WellKnownProperties.SourceContext" /> property of all logged events.
         /// </summary>
-        public ILog ForContext(string context) => 
-            this.WithProperty(WellKnownProperties.SourceContext, context, true);
+        public ILog ForContext(string context) =>
+            context == null ? (ILog) this : new SourceContextWrapper(this, context);
     }
 }
