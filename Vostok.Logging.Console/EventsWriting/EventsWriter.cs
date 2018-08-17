@@ -28,7 +28,7 @@ namespace Vostok.Logging.Console.EventsWriting
         private static void WriteBatch(IList<LogEventInfo> batch, IConsoleWriter writer)
         {
             var settings = batch[0].Settings;
-            if (settings.ColorsEnabled)
+            if (settings.ColorsEnabled && !System.Console.IsOutputRedirected)
             {
                 if (!settings.ColorMapping.TryGetValue(batch[0].Event.Level, out var color))
                     color = ConsoleColor.Gray;
