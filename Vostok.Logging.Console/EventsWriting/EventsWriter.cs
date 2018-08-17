@@ -9,20 +9,18 @@ namespace Vostok.Logging.Console.EventsWriting
     internal class EventsWriter : IEventsWriter
     {
         private readonly IEventsBatcher batcher;
-        private readonly IConsoleWriterProvider consoleWriterProvider;
+        private readonly IConsoleWriter consoleWriter;
 
-        public EventsWriter(IEventsBatcher batcher, IConsoleWriterProvider consoleWriterProvider)
+        public EventsWriter(IEventsBatcher batcher, IConsoleWriter consoleWriter)
         {
             this.batcher = batcher;
-            this.consoleWriterProvider = consoleWriterProvider;
+            this.consoleWriter = consoleWriter;
         }
 
         public void WriteEvents(LogEventInfo[] events, int eventsCount)
         {
-            var writer = consoleWriterProvider.ObtainWriter();
-
             foreach (var batch in batcher.BatchEvents(events, eventsCount))
-                WriteBatch(batch, writer);
+                WriteBatch(batch, consoleWriter);
         }
 
         private static void WriteBatch(IList<LogEventInfo> batch, IConsoleWriter writer)

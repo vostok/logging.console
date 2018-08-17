@@ -56,7 +56,14 @@ namespace Vostok.Logging.Console
                 {
                     while (true)
                     {
-                        LogEvents();
+                        try
+                        {
+                            LogEvents();
+                        }
+                        catch
+                        {
+                            await Task.Delay(100);
+                        }
 
                         iterationCompleted.Set();
 
@@ -70,7 +77,15 @@ namespace Vostok.Logging.Console
         {
             var eventsCount = events.Drain(temporaryBuffer, 0, temporaryBuffer.Length);
 
-            eventsWriter.WriteEvents(temporaryBuffer, eventsCount);
+            try
+            {
+                eventsWriter.WriteEvents(temporaryBuffer, eventsCount);
+            }
+            catch
+            {
+                Interlocked.Add(ref eventsLost, eventsCount);
+                throw;
+            }
 
             var currentEventsLost = EventsLost;
             if (currentEventsLost > eventsLostSinceLastIteration)

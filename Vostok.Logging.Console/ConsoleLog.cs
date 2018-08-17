@@ -45,7 +45,7 @@ namespace Vostok.Logging.Console
         /// Create a new console log with default settings. Colors are enabled by default.
         /// </summary>
         public ConsoleLog()
-            : this(new ConsoleLogSettings())
+            : this(new ConsoleLogSettings()) // TODO(krait): use cached default
         {
         }
 

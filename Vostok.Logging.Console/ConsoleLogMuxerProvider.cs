@@ -17,10 +17,15 @@ namespace Vostok.Logging.Console
                 return muxer;
 
             var newMuxer = CreateMuxer(muxerSettings);
-            return Interlocked.CompareExchange(ref muxer, newMuxer, null) ?? newMuxer;
+            return Interlocked.CompareExchange(ref muxer, newMuxer, null) ?? newMuxer; // TODO(krait): lazy
         }
 
-        private static ConsoleLogMuxer CreateMuxer(ConsoleLogGlobalSettings settings) =>
-            new ConsoleLogMuxer(new EventsWriter(new EventsBatcher(), new ConsoleWriterProvider(settings.OutputBufferSize)), settings.EventsQueueCapacity);
+        private static ConsoleLogMuxer CreateMuxer(ConsoleLogGlobalSettings settings)
+        {
+            var featuresDetector = new ConsoleFeaturesDetector();
+            return new ConsoleLogMuxer(
+                new EventsWriter(new EventsBatcher(), new ConsoleWriterFactory(featuresDetector, settings.OutputBufferSize).CreateWriter()), 
+                settings.EventsQueueCapacity);
+        }
     }
 }

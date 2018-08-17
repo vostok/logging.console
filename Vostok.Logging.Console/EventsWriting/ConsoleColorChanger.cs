@@ -2,7 +2,7 @@
 
 namespace Vostok.Logging.Console.EventsWriting
 {
-    internal class ConsoleColorChanger : IConsoleColorChanger
+    internal class ConsoleColorChanger : IConsoleColorChanger, IDisposable
     {
         private ConsoleColor oldColor;
 
