@@ -2,11 +2,12 @@
 using System.Threading.Tasks;
 using JetBrains.Annotations;
 using Vostok.Logging.Abstractions;
+using Vostok.Logging.Abstractions.Wrappers;
 
 namespace Vostok.Logging.Console
 {
     /// <summary>
-    /// <para>A log which outputs messages to console.</para>
+    /// <para>A log which outputs events to console.</para>
     /// <para>
     ///     The implementation is asynchronous: logged messages are not immediately rendered and written to console. 
     ///     Instead, they are added to a queue which is processed by a background worker. The capacity of the queue 
@@ -22,12 +23,11 @@ namespace Vostok.Logging.Console
         /// <para>Update settings that affect all console log instances.</para>
         /// <para>This method only works when called before the first event was logged through any console log instance.</para>
         /// </summary>
-        /// <param name="newSettings"></param>
         public static void UpdateGlobalSettings([NotNull] ConsoleLogGlobalSettings newSettings) =>
             MuxerProvider.UpdateSettings(newSettings);
 
         /// <summary>
-        /// Wait until all currently buffered log events are actually written to console.
+        /// Waits until all currently buffered log events are actually written to console.
         /// </summary>
         public static Task FlushAsync() => MuxerProvider.ObtainMuxer().FlushAsync();
 
@@ -50,12 +50,12 @@ namespace Vostok.Logging.Console
         }
 
         /// <summary>
-        /// The number of events dropped by this console log instance due to events queue overflow.
+        /// The number of events dropped by this <see cref="ConsoleLog"/> instance due to events queue overflow.
         /// </summary>
         public long EventsLost => Interlocked.Read(ref eventsLost);
 
         /// <summary>
-        /// The total number of events dropped by all console log instances due to events queue overflow.
+        /// The total number of events dropped by all <see cref="ConsoleLog"/> instances in process due to events queue overflow.
         /// </summary>
         public static long TotalEventsLost => MuxerProvider.ObtainMuxer().EventsLost;
 
@@ -73,9 +73,9 @@ namespace Vostok.Logging.Console
         public bool IsEnabledFor(LogLevel level) => true;
 
         /// <summary>
-        /// Puts the given <paramref name="context" /> string into <see cref="F:Vostok.Logging.Abstractions.WellKnownProperties.SourceContext" /> property of all events logged by this instance.
+        /// Returns a log based on this <see cref="ConsoleLog"/> instance that puts given <paramref name="context" /> string into <see cref="F:Vostok.Logging.Abstractions.WellKnownProperties.SourceContext" /> property of all logged events.
         /// </summary>
-        public ILog ForContext([NotNull] string context) => 
-            this.WithProperty(WellKnownProperties.SourceContext, context, true);
+        public ILog ForContext(string context) =>
+            context == null ? (ILog) this : new SourceContextWrapper(this, context);
     }
 }
