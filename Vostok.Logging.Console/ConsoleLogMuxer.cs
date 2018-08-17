@@ -7,7 +7,7 @@ using Vostok.Logging.Console.EventsWriting;
 
 namespace Vostok.Logging.Console
 {
-    internal class ConsoleLogMuxer
+    internal class ConsoleLogMuxer : IConsoleLogMuxer
     {
         private readonly AsyncManualResetEvent iterationCompleted = new AsyncManualResetEvent(true);
         private readonly object initLock = new object();

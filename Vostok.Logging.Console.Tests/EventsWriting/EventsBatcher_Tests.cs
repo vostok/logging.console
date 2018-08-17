@@ -33,7 +33,7 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
         [Test]
         public void Should_not_group_events_with_different_log_levels_if_colors_enabled()
         {
-            var settings = new ConsoleLogSettings();
+            var settings = new ConsoleLogSettings {ColorsEnabled = true};
 
             var events = new[]
             {
@@ -61,7 +61,7 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
         [Test]
         public void Should_group_events_with_same_log_level_and_settings()
         {
-            var settings = new ConsoleLogSettings();
+            var settings = new ConsoleLogSettings {ColorsEnabled = true};
 
             var events = new[]
             {
@@ -75,7 +75,7 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
         [Test]
         public void Should_create_correct_batches()
         {
-            var settings = new ConsoleLogSettings();
+            var settings = new ConsoleLogSettings {ColorsEnabled = true};
 
             var events = new[]
             {
@@ -98,7 +98,7 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
         [Test]
         public void Should_only_group_consequent_events()
         {
-            var settings = new ConsoleLogSettings();
+            var settings = new ConsoleLogSettings {ColorsEnabled = true};
 
             var events = new[]
             {
@@ -113,7 +113,7 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
         [Test]
         public void Should_return_single_batch_for_single_event()
         {
-            var settings = new ConsoleLogSettings();
+            var settings = new ConsoleLogSettings {ColorsEnabled = true};
 
             var events = new[]
             {

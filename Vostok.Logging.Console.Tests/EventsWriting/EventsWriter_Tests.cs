@@ -116,7 +116,7 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
 
         private static LogEventInfo CreateLogEventInfo(ConsoleLogSettings settings = null)
         {
-            return new LogEventInfo(new LogEvent(LogLevel.Info, DateTimeOffset.Now, ""), settings ?? new ConsoleLogSettings());
+            return new LogEventInfo(new LogEvent(LogLevel.Info, DateTimeOffset.Now, ""), settings ?? new ConsoleLogSettings {ColorsEnabled = true});
         }
 
         private static IEnumerable<ArraySegment<LogEventInfo>> MakeBatch(CallInfo callInfo)
