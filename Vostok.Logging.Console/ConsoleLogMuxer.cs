@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vostok.Commons.Collections;
+using Vostok.Commons.Threading;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Console.EventsWriting;
 

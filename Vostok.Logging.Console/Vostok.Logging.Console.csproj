@@ -33,6 +33,7 @@
 
   <ItemGroup>
     <Compile Include="..\..\vostok.commons.collections\Vostok.Commons.Collections\ConcurrentBoundedQueue.cs" Link="Commons\ConcurrentBoundedQueue.cs" />
+    <Compile Include="..\..\vostok.commons.threading\Vostok.Commons.Threading\AsyncManualResetEvent.cs" Link="Commons\AsyncManualResetEvent.cs" />
   </ItemGroup>
 
   <ItemGroup>
