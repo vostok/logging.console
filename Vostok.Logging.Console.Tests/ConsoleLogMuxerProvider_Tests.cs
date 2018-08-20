@@ -29,7 +29,7 @@ namespace Vostok.Logging.Console.Tests
         {
             var muxer1 = muxerProvider.ObtainMuxer();
 
-            muxerProvider.UpdateSettings(new ConsoleLogGlobalSettings { EventsQueueCapacity = 10 });
+            muxerProvider.UpdateSettings(new ConsoleLogGlobalSettings {EventsQueueCapacity = 10});
 
             var muxer2 = muxerProvider.ObtainMuxer();
 

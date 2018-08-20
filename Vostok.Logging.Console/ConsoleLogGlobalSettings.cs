@@ -14,6 +14,11 @@ namespace Vostok.Logging.Console
         public int EventsQueueCapacity { get; set; } = 10 * 1000;
 
         /// <summary>
+        /// Capacity of the temporary events buffer used by the background events writer.
+        /// </summary>
+        public int EventsTemporaryBufferCapacity { get; set; } = 10 * 1000;
+
+        /// <summary>
         /// Size of the buffer used when writing log messages to console, in bytes.
         /// </summary>
         public int OutputBufferSize { get; set; } = 65536;

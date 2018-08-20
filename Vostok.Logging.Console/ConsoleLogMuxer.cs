@@ -21,10 +21,10 @@ namespace Vostok.Logging.Console
         private long eventsLost;
         private long eventsLostSinceLastIteration;
 
-        public ConsoleLogMuxer(IEventsWriter eventsWriter, int eventsQueueCapacity)
+        public ConsoleLogMuxer(IEventsWriter eventsWriter, int eventsQueueCapacity, int temporaryBufferCapacity)
         {
             this.eventsWriter = eventsWriter;
-            temporaryBuffer = new LogEventInfo[eventsQueueCapacity];
+            temporaryBuffer = new LogEventInfo[temporaryBufferCapacity];
             events = new ConcurrentBoundedQueue<LogEventInfo>(eventsQueueCapacity);
         }
 

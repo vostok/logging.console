@@ -12,6 +12,9 @@ namespace Vostok.Logging.Console
             if (settings.EventsQueueCapacity <= 0)
                 throw new ArgumentOutOfRangeException(nameof(settings.EventsQueueCapacity), $"{nameof(settings.EventsQueueCapacity)} must be positive");
 
+            if (settings.EventsTemporaryBufferCapacity <= 0)
+                throw new ArgumentOutOfRangeException(nameof(settings.EventsQueueCapacity), $"{nameof(settings.EventsTemporaryBufferCapacity)} must be positive");
+
             return settings;
         }
 

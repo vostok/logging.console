@@ -34,6 +34,18 @@ namespace Vostok.Logging.Console.Tests
         }
 
         [Test]
+        public void ValidateGlobalSettings_should_throw_exception_if_EventsTemporaryBufferCapacityy_is_not_positive()
+        {
+            var settings = new ConsoleLogGlobalSettings { EventsTemporaryBufferCapacity = 0 };
+            new Action(() => SettingsValidator.ValidateGlobalSettings(settings))
+                .Should().Throw<ArgumentOutOfRangeException>();
+
+            settings.EventsTemporaryBufferCapacity = -1;
+            new Action(() => SettingsValidator.ValidateGlobalSettings(settings))
+                .Should().Throw<ArgumentOutOfRangeException>();
+        }
+
+        [Test]
         public void ValidateInstanceSettings_should_throw_exception_on_null_settings()
         {
             new Action(() => SettingsValidator.ValidateInstanceSettings(null))
