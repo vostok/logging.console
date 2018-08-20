@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Vostok.Commons.Collections;
 using Vostok.Commons.Threading;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Console.EventsWriting;
+using Waiter = System.Threading.Tasks.TaskCompletionSource<bool>;
 
 namespace Vostok.Logging.Console
 {
@@ -12,7 +15,8 @@ namespace Vostok.Logging.Console
     {
         private static readonly TimeSpan NewEventsTimeout = TimeSpan.FromSeconds(1);
 
-        private readonly AsyncManualResetEvent iterationCompleted = new AsyncManualResetEvent(true);
+        private readonly AsyncManualResetEvent flushSignal = new AsyncManualResetEvent(true);
+        private readonly List<Waiter> flushWaiters = new List<Waiter>();
         private readonly object initLock = new object();
         private readonly IEventsWriter eventsWriter;
 
@@ -44,12 +48,21 @@ namespace Vostok.Logging.Console
                 Interlocked.Increment(ref eventsLost);
                 return false;
             }
-
-            iterationCompleted.Reset();
+            
             return true;
         }
 
-        public Task FlushAsync() => iterationCompleted.WaitAsync();
+        public Task FlushAsync()
+        {
+            var waiter = new Waiter();
+
+            lock (flushWaiters)
+                flushWaiters.Add(waiter);
+
+            flushSignal.Set();
+
+            return waiter.Task;
+        }
 
         private void StartLoggingTask()
         {
@@ -60,16 +73,22 @@ namespace Vostok.Logging.Console
                     {
                         try
                         {
+                            List<Waiter> currentWaiters;
+                            lock (flushWaiters)
+                                currentWaiters = flushWaiters.ToList();
+
                             LogEvents();
+
+                            foreach (var waiter in currentWaiters)
+                                waiter.TrySetResult(true);
                         }
                         catch
                         {
                             await Task.Delay(100);
                         }
 
-                        iterationCompleted.Set();
-
-                        await events.TryWaitForNewItemsAsync(NewEventsTimeout);
+                        await Task.WhenAny(events.TryWaitForNewItemsAsync(NewEventsTimeout), flushSignal.WaitAsync());
+                        flushSignal.Reset();
                     }
                 });
         }

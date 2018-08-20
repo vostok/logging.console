@@ -73,6 +73,19 @@ namespace Vostok.Logging.Console.Tests
                 .ShouldPassIn(1.Seconds());
         }
 
+        [Test]
+        public void Flush_should_wait_until_current_events_are_written()
+        {
+            var e = CreateEvent();
+
+            muxer.TryLog(e, new ConsoleLogSettings());
+            muxer.FlushAsync().Wait();
+
+            eventsWriter.Received().WriteEvents(
+                Arg.Is<LogEventInfo[]>(events =>
+                    events.Length == 1 && ReferenceEquals(events[0].Event, e)), 1);
+        }
+
         private static LogEvent CreateEvent()
         {
             return new LogEvent(LogLevel.Info, DateTimeOffset.Now, "");
