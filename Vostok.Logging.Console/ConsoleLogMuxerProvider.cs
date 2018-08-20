@@ -24,7 +24,7 @@ namespace Vostok.Logging.Console
         {
             var featuresDetector = new ConsoleFeaturesDetector();
             return new ConsoleLogMuxer(
-                new EventsWriter(new EventsBatcher(), new ConsoleWriterFactory(featuresDetector, settings.OutputBufferSize).CreateWriter()), 
+                new EventsWriter(new EventsBatcher(featuresDetector), new ConsoleWriterFactory(featuresDetector, settings.OutputBufferSize).CreateWriter()), 
                 settings.EventsQueueCapacity);
         }
     }

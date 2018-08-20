@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using FluentAssertions;
+using NSubstitute;
 using NUnit.Framework;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Console.EventsWriting;
@@ -12,24 +13,21 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
     internal class EventsBatcher_Tests
     {
         private EventsBatcher batcher;
+        private EventsBatcher batcherWithRedirectedOutput;
 
         [SetUp]
         public void TestSetup()
         {
-            batcher = new EventsBatcher(false);
+            batcher = new EventsBatcher(CreteDetector(true));
+            batcherWithRedirectedOutput = new EventsBatcher(CreteDetector(false));
         }
 
-        /*[Test]
-        public void Should_not_group_events_with_different_settings_instances()
+        private static IConsoleFeaturesDetector CreteDetector(bool colorsAreSupported)
         {
-            var events = new[]
-            {
-                new LogEventInfo(CreateEvent(), new ConsoleLogSettings()),
-                new LogEventInfo(CreateEvent(), new ConsoleLogSettings())
-            };
-
-            batcher.BatchEvents(events, 2).Should().HaveCount(2);
-        }*/
+            var consoleFeaturesDetector = Substitute.For<IConsoleFeaturesDetector>();
+            consoleFeaturesDetector.AreColorsSupported.Returns(colorsAreSupported);
+            return consoleFeaturesDetector;
+        }
 
         [Test]
         public void Should_not_group_events_with_different_log_levels_if_colors_enabled()
@@ -162,7 +160,7 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
             batcher.BatchEvents(logInfos, logInfos.Length).Should().HaveCount(1);
         }
 
-        [Test(Description = "Not works in test running mode. Not debugging")]
+        [Test]
         public void Should_group_all_because_of_output_redirecting()
         {
             var settings = new ConsoleLogSettings { OutputTemplate = OutputTemplate.Parse($"{{{WellKnownTokens.Message}}}") };
@@ -181,7 +179,7 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
                 new LogEventInfo(logEventWarn, settings),
                 new LogEventInfo(logEventFatal, settings),
             };
-            new EventsBatcher(System.Console.IsOutputRedirected).BatchEvents(logInfos, logInfos.Length).Should().HaveCount(1);
+            batcherWithRedirectedOutput.BatchEvents(logInfos, logInfos.Length).Should().HaveCount(1);
         }
 
         private static LogEvent CreateEvent(LogLevel level = LogLevel.Info)
