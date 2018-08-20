@@ -75,7 +75,10 @@ namespace Vostok.Logging.Console
                         {
                             List<Waiter> currentWaiters;
                             lock (flushWaiters)
+                            {
+                                flushWaiters.RemoveAll(w => w.Task.IsCompleted);
                                 currentWaiters = flushWaiters.ToList();
+                            }
 
                             LogEvents();
 
