@@ -10,6 +10,8 @@ namespace Vostok.Logging.Console
 {
     internal class ConsoleLogMuxer : IConsoleLogMuxer
     {
+        private static readonly TimeSpan NewEventsTimeout = TimeSpan.FromSeconds(1);
+
         private readonly AsyncManualResetEvent iterationCompleted = new AsyncManualResetEvent(true);
         private readonly object initLock = new object();
         private readonly IEventsWriter eventsWriter;
@@ -35,8 +37,6 @@ namespace Vostok.Logging.Console
             if (!isInitialized)
                 Initialize();
 
-            iterationCompleted.Reset();
-
             var eventInfo = new LogEventInfo(@event, settings);
 
             if (!events.TryAdd(eventInfo))
@@ -45,6 +45,7 @@ namespace Vostok.Logging.Console
                 return false;
             }
 
+            iterationCompleted.Reset();
             return true;
         }
 
@@ -68,8 +69,7 @@ namespace Vostok.Logging.Console
 
                         iterationCompleted.Set();
 
-                        if (events.Count == 0)
-                            await events.WaitForNewItemsAsync();
+                        await events.TryWaitForNewItemsAsync(NewEventsTimeout);
                     }
                 });
         }
