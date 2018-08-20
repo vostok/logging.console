@@ -29,6 +29,9 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
             return consoleFeaturesDetector;
         }
 
+        private static ConsoleLogSettings GetSettings() =>
+            new ConsoleLogSettings { OutputTemplate = OutputTemplate.Parse($"{{{WellKnownTokens.Message}}}") };
+
         [Test]
         public void Should_not_group_events_with_different_log_levels_if_colors_enabled()
         {
@@ -131,8 +134,6 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
         [Test]
         public void Should_group_all_log_events_in_one_batch()
         {
-            ConsoleLogSettings GetSettings() => new ConsoleLogSettings { OutputTemplate = OutputTemplate.Parse($"{{{WellKnownTokens.Message}}}") };
-
             var sets1 = GetSettings();
             var sets2 = GetSettings();
             sets2.ColorMapping[LogLevel.Debug] = sets1.ColorMapping[LogLevel.Info];
@@ -161,9 +162,33 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
         }
 
         [Test]
+        public void Should_group_all_in_one_batch_because_of_absence_level_key_in_map_color()
+        {
+            var sets1 = GetSettings();
+            sets1.ColorMapping.Remove(LogLevel.Info);
+            sets1.ColorMapping[LogLevel.Debug] = ConsoleColor.Gray;
+            var sets2 = GetSettings();
+            sets2.ColorMapping.Remove(LogLevel.Debug);
+            sets2.ColorMapping[LogLevel.Info] = ConsoleColor.Gray;
+
+            var logEventInfo = CreateEvent(LogLevel.Info);
+            var logEventDebug = CreateEvent(LogLevel.Debug);
+
+            var logInfos = new[]
+            {
+                new LogEventInfo(logEventInfo, sets1),
+                new LogEventInfo(logEventDebug, sets2),     //both absent
+                new LogEventInfo(logEventDebug, sets1),     //ansent and gray
+                new LogEventInfo(logEventInfo, sets2),      //same colors
+                new LogEventInfo(logEventDebug, sets2),     //gray and absent
+            };
+            batcher.BatchEvents(logInfos, logInfos.Length).Should().HaveCount(1);
+        }
+
+        [Test]
         public void Should_group_all_because_of_output_redirecting()
         {
-            var settings = new ConsoleLogSettings { OutputTemplate = OutputTemplate.Parse($"{{{WellKnownTokens.Message}}}") };
+            var settings = GetSettings();
 
             var logEventInfo = CreateEvent(LogLevel.Info);
             var logEventDebug = CreateEvent(LogLevel.Debug);
