@@ -20,7 +20,7 @@ namespace Vostok.Logging.Console.EventsWriting
                 new FakeConsoleColorChanger();
 
             var stream = System.Console.OpenStandardOutput();
-            var writer = new StreamWriter(stream, System.Console.OutputEncoding, bufferSize, true) {AutoFlush = false}; // TODO(krait): test with redir
+            var writer = new StreamWriter(stream, System.Console.OutputEncoding, bufferSize, true) {AutoFlush = false};
             return new ConsoleWriter(writer, colorChanger);
         }
     }
