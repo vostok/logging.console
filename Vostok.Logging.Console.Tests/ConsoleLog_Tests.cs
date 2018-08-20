@@ -1,6 +1,7 @@
 ﻿using System;
-using System.IO;
+using System.Collections.Generic;
 using FluentAssertions;
+using NSubstitute;
 using NUnit.Framework;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Formatting;
@@ -28,61 +29,61 @@ namespace Vostok.Logging.Console.Tests
         }
 
         [Test]
-        public void Should_log_formatted_messages_to_console()
+        public void Should_log_messages()
         {
-            var settings = new ConsoleLogSettings {OutputTemplate = OutputTemplate.Parse("{Message}")};
-            CaptureOutput(() => new ConsoleLog(settings).Info("Test."))
+            CaptureEvents(log => log.Info("Test."))
                 .Should()
-                .Be("Test.");
+                .ContainSingle(e => e.MessageTemplate == "Test.");
         }
 
         [Test]
         public void ForContext_should_add_SourceContext_property()
         {
-            var settings = new ConsoleLogSettings {OutputTemplate = OutputTemplate.Parse($"{{{WellKnownProperties.SourceContext}}}")};
-            CaptureOutput(() => new ConsoleLog(settings).ForContext("ctx").Info("Test."))
+            CaptureEvents(log => log.ForContext("ctx").Info("Test."))
                 .Should()
-                .Be("ctx");
+                .ContainSingle(e => (string)e.Properties[WellKnownProperties.SourceContext] == "ctx");
         }
 
         [Test]
         public void ForContext_should_replace_SourceContext_property()
         {
-            var settings = new ConsoleLogSettings { OutputTemplate = OutputTemplate.Parse($"{{{WellKnownProperties.SourceContext}}}") };
-            CaptureOutput(() => new ConsoleLog(settings)
-                    .ForContext("ctx")
-                    .ForContext("ctx2")
-                    .ForContext("ctx3")
-                    .Info("Test."))
+            CaptureEvents(
+                    log => log
+                        .ForContext("ctx")
+                        .ForContext("ctx2")
+                        .ForContext("ctx3")
+                        .Info("Test."))
                 .Should()
-                .Be("ctx3");
+                .ContainSingle(e => (string)e.Properties[WellKnownProperties.SourceContext] == "ctx3");
         }
 
         [Test]
         public void ForContext_should_support_null_context()
         {
-            var settings = new ConsoleLogSettings { OutputTemplate = OutputTemplate.Parse($"{{{WellKnownProperties.SourceContext}}}") };
-            CaptureOutput(() => new ConsoleLog(settings)
-                    .ForContext("ctx")
-                    .ForContext(null)
-                    .Info("Test."))
+            CaptureEvents(
+                    log => log
+                        .ForContext("ctx")
+                        .ForContext(null)
+                        .Info("Test."))
                 .Should()
-                .Be("");
+                .ContainSingle(e => e.Properties == null || !e.Properties.ContainsKey(WellKnownProperties.SourceContext));
         }
 
-        private static string CaptureOutput(Action action)
+        private static IEnumerable<LogEvent> CaptureEvents(Action<ConsoleLog> action)
         {
-            var writer = new StringWriter();
-            var oldOut = System.Console.Out;
+            var events = new List<LogEvent>();
 
-            System.Console.SetOut(writer);
+            var muxer = Substitute.For<IConsoleLogMuxer>();
+            muxer.TryLog(Arg.Do<LogEvent>(e => events.Add(e)), Arg.Any<ConsoleLogSettings>()).Returns(true);
 
-            action();
-            ConsoleLog.FlushAsync().GetAwaiter().GetResult();
+            var muxerProvider = Substitute.For<IConsoleLogMuxerProvider>();
+            muxerProvider.ObtainMuxer().Returns(muxer);
 
-            System.Console.SetOut(oldOut);
+            var log = new ConsoleLog(muxerProvider, new ConsoleLogSettings {OutputTemplate = OutputTemplate.Parse("{Message}")});
 
-            return writer.ToString();
+            action(log);
+
+            return events;
         }
     }
 }

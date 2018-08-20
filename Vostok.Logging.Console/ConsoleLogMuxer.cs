@@ -2,12 +2,13 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Vostok.Commons.Collections;
+using Vostok.Commons.Threading;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Console.EventsWriting;
 
 namespace Vostok.Logging.Console
 {
-    internal class ConsoleLogMuxer
+    internal class ConsoleLogMuxer : IConsoleLogMuxer
     {
         private readonly AsyncManualResetEvent iterationCompleted = new AsyncManualResetEvent(true);
         private readonly object initLock = new object();
@@ -56,7 +57,14 @@ namespace Vostok.Logging.Console
                 {
                     while (true)
                     {
-                        LogEvents();
+                        try
+                        {
+                            LogEvents();
+                        }
+                        catch
+                        {
+                            await Task.Delay(100);
+                        }
 
                         iterationCompleted.Set();
 
@@ -70,7 +78,15 @@ namespace Vostok.Logging.Console
         {
             var eventsCount = events.Drain(temporaryBuffer, 0, temporaryBuffer.Length);
 
-            eventsWriter.WriteEvents(temporaryBuffer, eventsCount);
+            try
+            {
+                eventsWriter.WriteEvents(temporaryBuffer, eventsCount);
+            }
+            catch
+            {
+                Interlocked.Add(ref eventsLost, eventsCount);
+                throw;
+            }
 
             var currentEventsLost = EventsLost;
             if (currentEventsLost > eventsLostSinceLastIteration)

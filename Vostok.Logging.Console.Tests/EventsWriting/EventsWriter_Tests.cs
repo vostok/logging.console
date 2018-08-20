@@ -29,10 +29,7 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
             colorReleaser = Substitute.For<IDisposable>();
             consoleWriter.ChangeColor(Arg.Any<ConsoleColor>()).Returns(_ => colorReleaser);
 
-            var consoleWriterProvider = Substitute.For<IConsoleWriterProvider>();
-            consoleWriterProvider.ObtainWriter().Returns(_ => consoleWriter);
-
-            writer = new EventsWriter(batcher, consoleWriterProvider);
+            writer = new EventsWriter(batcher, consoleWriter);
         }
 
         [Test]
@@ -119,7 +116,7 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
 
         private static LogEventInfo CreateLogEventInfo(ConsoleLogSettings settings = null)
         {
-            return new LogEventInfo(new LogEvent(LogLevel.Info, DateTimeOffset.Now, ""), settings ?? new ConsoleLogSettings());
+            return new LogEventInfo(new LogEvent(LogLevel.Info, DateTimeOffset.Now, ""), settings ?? new ConsoleLogSettings {ColorsEnabled = true});
         }
 
         private static IEnumerable<ArraySegment<LogEventInfo>> MakeBatch(CallInfo callInfo)

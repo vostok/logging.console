@@ -15,28 +15,31 @@ namespace Vostok.Logging.Console
         /// <summary>
         /// The <see cref="OutputTemplate"/> used to render log messages.
         /// </summary>
+        [NotNull]
         public OutputTemplate OutputTemplate { get; set; } = OutputTemplate.Default;
 
         /// <summary>
         /// If specified, this <see cref="IFormatProvider"/> will be used when formatting log events.
         /// </summary>
+        [CanBeNull]
         public IFormatProvider FormatProvider { get; set; }
 
         /// <summary>
         /// Mapping of log levels to text color in console.
         /// </summary>
+        [NotNull]
         public Dictionary<LogLevel, ConsoleColor> ColorMapping { get; set; } = new Dictionary<LogLevel, ConsoleColor>
         {
             [LogLevel.Debug] = ConsoleColor.Gray,
             [LogLevel.Info] = ConsoleColor.White,
             [LogLevel.Warn] = ConsoleColor.Yellow,
             [LogLevel.Error] = ConsoleColor.Red,
-            [LogLevel.Fatal] = ConsoleColor.DarkRed,
+            [LogLevel.Fatal] = ConsoleColor.DarkRed
         };
 
         /// <summary>
         /// Specifies whether the console log must colorize text depending on the log level.
         /// </summary>
-        public bool ColorsEnabled { get; set; } = true;
+        public bool ColorsEnabled { get; set; } = false;
     }
 }
