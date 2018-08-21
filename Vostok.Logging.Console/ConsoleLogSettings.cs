@@ -40,6 +40,6 @@ namespace Vostok.Logging.Console
         /// <summary>
         /// Specifies whether the console log must colorize text depending on the log level.
         /// </summary>
-        public bool ColorsEnabled { get; set; } = false;
+        public bool ColorsEnabled { get; set; }
     }
 }

@@ -27,6 +27,12 @@ namespace Vostok.Logging.Console.Tests
         }
 
         [Test]
+        public void Default_settings_should_have_disabled_colors()
+        {
+            settings.ColorsEnabled.Should().BeFalse();
+        }
+
+        [Test]
         public void Default_settings_should_have_no_format_provider()
         {
             settings.FormatProvider.Should().BeNull();

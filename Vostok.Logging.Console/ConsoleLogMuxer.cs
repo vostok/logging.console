@@ -14,6 +14,7 @@ namespace Vostok.Logging.Console
     internal class ConsoleLogMuxer : IConsoleLogMuxer
     {
         private static readonly TimeSpan NewEventsTimeout = TimeSpan.FromSeconds(1);
+        private static readonly List<Waiter> EmptyWaitersList = new List<Waiter>();
 
         private readonly AsyncManualResetEvent flushSignal = new AsyncManualResetEvent(true);
         private readonly List<Waiter> flushWaiters = new List<Waiter>();
@@ -74,10 +75,11 @@ namespace Vostok.Logging.Console
                         try
                         {
                             List<Waiter> currentWaiters;
+
                             lock (flushWaiters)
                             {
                                 flushWaiters.RemoveAll(w => w.Task.IsCompleted);
-                                currentWaiters = flushWaiters.ToList();
+                                currentWaiters = flushWaiters.Count > 0 ? flushWaiters.ToList() : EmptyWaitersList;
                             }
 
                             LogEvents();
@@ -91,6 +93,7 @@ namespace Vostok.Logging.Console
                         }
 
                         await Task.WhenAny(events.TryWaitForNewItemsAsync(NewEventsTimeout), flushSignal.WaitAsync());
+
                         flushSignal.Reset();
                     }
                 });

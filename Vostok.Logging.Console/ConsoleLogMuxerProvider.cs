@@ -28,11 +28,13 @@ namespace Vostok.Logging.Console
 
         private static ConsoleLogMuxer CreateMuxer(ConsoleLogGlobalSettings settings)
         {
-            var featuresDetector = new ConsoleFeaturesDetector();
-            return new ConsoleLogMuxer(
-                new EventsWriter(new EventsBatcher(), new ConsoleWriterFactory(featuresDetector, settings.OutputBufferSize).CreateWriter()),
-                settings.EventsQueueCapacity,
-                settings.EventsTemporaryBufferCapacity);
+            var consoleFeaturesDetector = new ConsoleFeaturesDetector();
+            var consoleWriterFactory = new ConsoleWriterFactory(consoleFeaturesDetector, settings.OutputBufferSize);
+            var consoleWriter = consoleWriterFactory.CreateWriter();
+            var eventsBatcher = new EventsBatcher();
+            var eventsWriter = new EventsWriter(eventsBatcher, consoleWriter);
+
+            return new ConsoleLogMuxer(eventsWriter, settings.EventsQueueCapacity, settings.EventsTemporaryBufferCapacity);
         }
     }
 }
