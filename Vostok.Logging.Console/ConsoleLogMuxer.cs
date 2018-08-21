@@ -24,7 +24,7 @@ namespace Vostok.Logging.Console
         private readonly ConcurrentBoundedQueue<LogEventInfo> events;
         private readonly LogEventInfo[] temporaryBuffer;
 
-        private bool isInitialized;
+        private volatile bool isInitialized;
         private long eventsLost;
         private long eventsLostSinceLastIteration;
 
@@ -55,6 +55,9 @@ namespace Vostok.Logging.Console
 
         public Task FlushAsync()
         {
+            if (!isInitialized)
+                return Task.CompletedTask;
+
             var waiter = new Waiter();
 
             lock (flushWaiters)

@@ -86,6 +86,12 @@ namespace Vostok.Logging.Console.Tests
                     events.Length == 1 && ReferenceEquals(events[0].Event, e)), 1);
         }
 
+        [Test]
+        public void Flush_should_complete_immediately_when_muxer_is_not_initialized_yet()
+        {
+            muxer.FlushAsync().IsCompleted.Should().BeTrue();
+        }
+
         private static LogEvent CreateEvent()
         {
             return new LogEvent(LogLevel.Info, DateTimeOffset.Now, "");
