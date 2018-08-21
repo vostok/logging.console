@@ -32,6 +32,11 @@ namespace Vostok.Logging.Console
         /// </summary>
         public static Task FlushAsync() => DefaultMuxerProvider.ObtainMuxer().FlushAsync();
 
+        /// <summary>
+        /// Waits until all currently buffered log events are actually written to console.
+        /// </summary>
+        public static void Flush() => FlushAsync().GetAwaiter().GetResult();
+
         private readonly IConsoleLogMuxerProvider muxerProvider;
         private readonly ConsoleLogSettings settings;
         private long eventsLost;
