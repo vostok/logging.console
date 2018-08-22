@@ -39,20 +39,18 @@ namespace Vostok.Logging.Console.EventsWriting
 
         private static bool FitInOneBatch(LogEventInfo a, LogEventInfo b)
         {
-            var settingsAreEqual = ReferenceEquals(a.Settings, b.Settings);
-            var checkEqualSettings = !a.Settings.ColorsEnabled || a.Event.Level == b.Event.Level;
+            if (ReferenceEquals(a.Settings, b.Settings))
+                return !a.Settings.ColorsEnabled || a.Event.Level == b.Event.Level;
 
-            var aGetColorResult = a.Settings.ColorMapping.TryGetValue(a.Event.Level, out var aColor);
-            var bGetColorResult = b.Settings.ColorMapping.TryGetValue(a.Event.Level, out var bColor);
+            if (!a.Settings.ColorsEnabled && !b.Settings.ColorsEnabled)
+                return true;
 
-            var checkDifferentSettings = aGetColorResult && bGetColorResult && aColor == bColor;
-            var checkDifferentSettingsNotInMap = !aGetColorResult && !bGetColorResult ||
-                                                 aGetColorResult && aColor == ConsoleColor.Gray ||
-                                                 bGetColorResult && bColor == ConsoleColor.Gray;
+            if (!a.Settings.ColorMapping.TryGetValue(a.Event.Level, out var aColor))
+                aColor = ConsoleColor.Gray;
+            if (!b.Settings.ColorMapping.TryGetValue(a.Event.Level, out var bColor))
+                bColor = ConsoleColor.Gray;
 
-            return settingsAreEqual && checkEqualSettings ||
-                   checkDifferentSettings ||
-                   checkDifferentSettingsNotInMap;
+            return aColor == bColor;
         }
     }
 }
