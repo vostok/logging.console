@@ -121,9 +121,8 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
             batcher.BatchEvents(Array.Empty<LogEventInfo>(), 0).Should().HaveCount(0);
         }
 
-        // TODO(krait): split this test into multiple smaller tests for each case
         [Test]
-        public void Should_group_all_log_events_in_one_batch()
+        public void Should_group_all_log_events_in_one_batch_by_different_reasons()
         {
             var sets1 = GetSettings();
             var sets2 = GetSettings();
@@ -131,7 +130,6 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
 
             var logEventInfo = CreateEvent(LogLevel.Info);
             var logEventDebug = CreateEvent(LogLevel.Debug);
-            var logEventError = CreateEvent(LogLevel.Error);
 
             var logInfos = new[]
             {
@@ -141,10 +139,20 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
                 new LogEventInfo(logEventDebug, sets2),     //same settings and different levels but same colors in mapping
             };
             batcher.BatchEvents(logInfos, logInfos.Length).Should().HaveCount(1);
+        }
 
+        [Test]
+        public void Should_group_all_log_events_in_one_batch_if_colors_are_disabled()
+        {
+            var sets1 = GetSettings();
             sets1.ColorsEnabled = false;
+            var sets2 = GetSettings();
+            sets2.ColorMapping[LogLevel.Debug] = sets1.ColorMapping[LogLevel.Info];
 
-            logInfos = new[]
+            var logEventInfo = CreateEvent(LogLevel.Info);
+            var logEventError = CreateEvent(LogLevel.Error);
+
+            var logInfos = new[]
             {
                 new LogEventInfo(logEventInfo, sets1),
                 new LogEventInfo(logEventError, sets1),     //same default settings, colors are disabled
