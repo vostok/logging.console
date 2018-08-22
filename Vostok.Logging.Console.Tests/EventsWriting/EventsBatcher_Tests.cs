@@ -18,22 +18,12 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
         [SetUp]
         public void TestSetup()
         {
-            batcher = new EventsBatcher(CreteDetector(true));
-            batcherWithRedirectedOutput = new EventsBatcher(CreteDetector(false));
+            batcher = new EventsBatcher(CreateDetector(true));
+            batcherWithRedirectedOutput = new EventsBatcher(CreateDetector(false));
         }
-
-        private static IConsoleFeaturesDetector CreteDetector(bool colorsAreSupported)
-        {
-            var consoleFeaturesDetector = Substitute.For<IConsoleFeaturesDetector>();
-            consoleFeaturesDetector.AreColorsSupported.Returns(colorsAreSupported);
-            return consoleFeaturesDetector;
-        }
-
-        private static ConsoleLogSettings GetSettings() =>
-            new ConsoleLogSettings { OutputTemplate = OutputTemplate.Parse($"{{{WellKnownTokens.Message}}}") };
 
         [Test]
-        public void Should_not_group_events_with_different_log_levels_if_colors_enabled()
+        public void Should_not_group_events_with_different_log_levels_if_colors_are_enabled()
         {
             var settings = new ConsoleLogSettings {ColorsEnabled = true};
 
@@ -47,7 +37,7 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
         }
 
         [Test]
-        public void Should_group_events_with_different_log_levels_if_colors_disabled()
+        public void Should_group_events_with_different_log_levels_if_colors_are_disabled()
         {
             var settings = new ConsoleLogSettings {ColorsEnabled = false};
 
@@ -131,6 +121,7 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
             batcher.BatchEvents(Array.Empty<LogEventInfo>(), 0).Should().HaveCount(0);
         }
 
+        // TODO(krait): split this test into multiple smaller tests for each case
         [Test]
         public void Should_group_all_log_events_in_one_batch()
         {
@@ -162,7 +153,7 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
         }
 
         [Test]
-        public void Should_group_all_in_one_batch_because_of_absence_level_key_in_map_color()
+        public void Should_use_gray_as_default_color()
         {
             var sets1 = GetSettings();
             sets1.ColorMapping.Remove(LogLevel.Info);
@@ -178,7 +169,7 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
             {
                 new LogEventInfo(logEventInfo, sets1),
                 new LogEventInfo(logEventDebug, sets2),     //both absent
-                new LogEventInfo(logEventDebug, sets1),     //ansent and gray
+                new LogEventInfo(logEventDebug, sets1),     //absent and gray
                 new LogEventInfo(logEventInfo, sets2),      //same colors
                 new LogEventInfo(logEventDebug, sets2),     //gray and absent
             };
@@ -186,7 +177,7 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
         }
 
         [Test]
-        public void Should_group_all_because_of_output_redirecting()
+        public void Should_disregard_log_level_when_colors_are_not_supported()
         {
             var settings = GetSettings();
 
@@ -206,6 +197,16 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
             };
             batcherWithRedirectedOutput.BatchEvents(logInfos, logInfos.Length).Should().HaveCount(1);
         }
+
+        private static IConsoleFeaturesDetector CreateDetector(bool colorsAreSupported)
+        {
+            var consoleFeaturesDetector = Substitute.For<IConsoleFeaturesDetector>();
+            consoleFeaturesDetector.AreColorsSupported.Returns(colorsAreSupported);
+            return consoleFeaturesDetector;
+        }
+
+        private static ConsoleLogSettings GetSettings() =>
+            new ConsoleLogSettings { OutputTemplate = OutputTemplate.Parse($"{{{WellKnownTokens.Message}}}") };
 
         private static LogEvent CreateEvent(LogLevel level = LogLevel.Info)
         {
