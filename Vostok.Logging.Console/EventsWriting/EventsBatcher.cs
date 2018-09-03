@@ -5,10 +5,23 @@ namespace Vostok.Logging.Console.EventsWriting
 {
     internal class EventsBatcher : IEventsBatcher
     {
+        private readonly IConsoleFeaturesDetector consoleFeaturesDetector;
+
+        public EventsBatcher(IConsoleFeaturesDetector consoleFeaturesDetector)
+        {
+            this.consoleFeaturesDetector = consoleFeaturesDetector;
+        }
+
         public IEnumerable<ArraySegment<LogEventInfo>> BatchEvents(LogEventInfo[] events, int eventsCount)
         {
             if (eventsCount == 0)
                 yield break;
+
+            if (!consoleFeaturesDetector.AreColorsSupported)
+            {
+                yield return new ArraySegment<LogEventInfo>(events, 0, eventsCount);
+                yield break;
+            }
 
             var batchStart = 0;
 
@@ -26,10 +39,18 @@ namespace Vostok.Logging.Console.EventsWriting
 
         private static bool FitInOneBatch(LogEventInfo a, LogEventInfo b)
         {
-            if (!ReferenceEquals(a.Settings, b.Settings))
-                return false;
+            if (ReferenceEquals(a.Settings, b.Settings))
+                return !a.Settings.ColorsEnabled || a.Event.Level == b.Event.Level;
 
-            return !a.Settings.ColorsEnabled || a.Event.Level == b.Event.Level;
+            if (!a.Settings.ColorsEnabled && !b.Settings.ColorsEnabled)
+                return true;
+
+            if (!a.Settings.ColorMapping.TryGetValue(a.Event.Level, out var aColor))
+                aColor = ConsoleColor.Gray;
+            if (!b.Settings.ColorMapping.TryGetValue(a.Event.Level, out var bColor))
+                bColor = ConsoleColor.Gray;
+
+            return aColor == bColor;
         }
     }
 }

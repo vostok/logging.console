@@ -29,7 +29,10 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
             colorReleaser = Substitute.For<IDisposable>();
             consoleWriter.ChangeColor(Arg.Any<ConsoleColor>()).Returns(_ => colorReleaser);
 
-            writer = new EventsWriter(batcher, consoleWriter);
+            var featuresDetector = Substitute.For<IConsoleFeaturesDetector>();
+            featuresDetector.AreColorsSupported.Returns(true);
+
+            writer = new EventsWriter(batcher, consoleWriter, featuresDetector);
         }
 
         [Test]

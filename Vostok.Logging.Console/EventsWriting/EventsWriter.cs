@@ -10,11 +10,13 @@ namespace Vostok.Logging.Console.EventsWriting
     {
         private readonly IEventsBatcher batcher;
         private readonly IConsoleWriter consoleWriter;
+        private readonly IConsoleFeaturesDetector consoleFeaturesDetector;
 
-        public EventsWriter(IEventsBatcher batcher, IConsoleWriter consoleWriter)
+        public EventsWriter(IEventsBatcher batcher, IConsoleWriter consoleWriter, IConsoleFeaturesDetector consoleFeaturesDetector)
         {
             this.batcher = batcher;
             this.consoleWriter = consoleWriter;
+            this.consoleFeaturesDetector = consoleFeaturesDetector;
         }
 
         public void WriteEvents(LogEventInfo[] events, int eventsCount)
@@ -23,10 +25,10 @@ namespace Vostok.Logging.Console.EventsWriting
                 WriteBatch(batch, consoleWriter);
         }
 
-        private static void WriteBatch(IList<LogEventInfo> batch, IConsoleWriter writer)
+        private void WriteBatch(IList<LogEventInfo> batch, IConsoleWriter writer)
         {
             var settings = batch[0].Settings;
-            if (settings.ColorsEnabled)
+            if (settings.ColorsEnabled && consoleFeaturesDetector.AreColorsSupported)
             {
                 if (!settings.ColorMapping.TryGetValue(batch[0].Event.Level, out var color))
                     color = ConsoleColor.Gray;
