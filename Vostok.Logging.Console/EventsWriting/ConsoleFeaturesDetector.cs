@@ -2,6 +2,11 @@
 {
     internal class ConsoleFeaturesDetector : IConsoleFeaturesDetector
     {
-        public bool AreColorsSupported => !System.Console.IsOutputRedirected;
+        public ConsoleFeaturesDetector()
+        {
+            AreColorsSupported = !System.Console.IsOutputRedirected;
+        }
+
+        public bool AreColorsSupported { get; }
     }
 }
