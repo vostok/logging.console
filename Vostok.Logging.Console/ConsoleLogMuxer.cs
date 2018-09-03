@@ -104,16 +104,24 @@ namespace Vostok.Logging.Console
 
         private void LogEvents()
         {
-            var eventsCount = events.Drain(temporaryBuffer, 0, temporaryBuffer.Length);
+            var eventsToDrain = events.Count;
 
-            try
+            while (eventsToDrain > 0)
             {
-                eventsWriter.WriteEvents(temporaryBuffer, eventsCount);
-            }
-            catch
-            {
-                Interlocked.Add(ref eventsLost, eventsCount);
-                throw;
+                var eventsDrained = events.Drain(temporaryBuffer, 0, temporaryBuffer.Length);
+                if (eventsDrained == 0)
+                    break;
+                eventsToDrain -= eventsDrained;
+
+                try
+                {
+                    eventsWriter.WriteEvents(temporaryBuffer, eventsDrained);
+                }
+                catch
+                {
+                    Interlocked.Add(ref eventsLost, eventsDrained);
+                    throw;
+                }
             }
 
             var currentEventsLost = EventsLost;
