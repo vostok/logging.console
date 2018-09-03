@@ -146,8 +146,6 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
         {
             var sets1 = GetSettings();
             sets1.ColorsEnabled = false;
-            var sets2 = GetSettings();
-            sets2.ColorMapping[LogLevel.Debug] = sets1.ColorMapping[LogLevel.Info];
 
             var logEventInfo = CreateEvent(LogLevel.Info);
             var logEventError = CreateEvent(LogLevel.Error);
