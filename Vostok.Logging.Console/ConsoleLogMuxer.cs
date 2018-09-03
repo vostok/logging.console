@@ -111,6 +111,7 @@ namespace Vostok.Logging.Console
                 var eventsDrained = events.Drain(temporaryBuffer, 0, temporaryBuffer.Length);
                 if (eventsDrained == 0)
                     break;
+
                 eventsToDrain -= eventsDrained;
 
                 try

@@ -37,20 +37,21 @@ namespace Vostok.Logging.Console.EventsWriting
             yield return new ArraySegment<LogEventInfo>(events, batchStart, eventsCount - batchStart);
         }
 
-        private static bool FitInOneBatch(LogEventInfo a, LogEventInfo b)
+        private static bool FitInOneBatch(LogEventInfo previous, LogEventInfo current)
         {
-            if (ReferenceEquals(a.Settings, b.Settings))
-                return !a.Settings.ColorsEnabled || a.Event.Level == b.Event.Level;
+            if (ReferenceEquals(previous.Settings, current.Settings))
+                return !previous.Settings.ColorsEnabled || previous.Event.Level == current.Event.Level;
 
-            if (!a.Settings.ColorsEnabled && !b.Settings.ColorsEnabled)
+            if (!previous.Settings.ColorsEnabled && !current.Settings.ColorsEnabled)
                 return true;
 
-            if (!a.Settings.ColorMapping.TryGetValue(a.Event.Level, out var aColor))
-                aColor = ConsoleColor.Gray;
-            if (!b.Settings.ColorMapping.TryGetValue(a.Event.Level, out var bColor))
-                bColor = ConsoleColor.Gray;
+            if (!previous.Settings.ColorMapping.TryGetValue(previous.Event.Level, out var previousColor))
+                previousColor = ConsoleColor.Gray;
 
-            return aColor == bColor;
+            if (!current.Settings.ColorMapping.TryGetValue(current.Event.Level, out var currentColor))
+                currentColor = ConsoleColor.Gray;
+
+            return previousColor == currentColor;
         }
     }
 }

@@ -204,6 +204,29 @@ namespace Vostok.Logging.Console.Tests.EventsWriting
             batcherWithRedirectedOutput.BatchEvents(logInfos, logInfos.Length).Should().HaveCount(1);
         }
 
+        [Test]
+        public void Should_not_group_events_with_same_level_but_different_color_in_settings()
+        {
+            var settings1 = new ConsoleLogSettings { ColorsEnabled = true };
+            var settings2 = new ConsoleLogSettings { ColorsEnabled = true };
+
+            settings1.ColorMapping[LogLevel.Info] = ConsoleColor.Black;
+            settings2.ColorMapping[LogLevel.Info] = ConsoleColor.Blue;
+
+            var event1 = CreateEvent();
+            var event2 = CreateEvent();
+
+            var batches = batcher.BatchEvents(
+                new[]
+                {
+                    new LogEventInfo(event1, settings1), 
+                    new LogEventInfo(event2, settings2) 
+                },
+                2);
+
+            batches.Should().HaveCount(2);
+        }
+
         private static IConsoleFeaturesDetector CreateDetector(bool colorsAreSupported)
         {
             var consoleFeaturesDetector = Substitute.For<IConsoleFeaturesDetector>();
