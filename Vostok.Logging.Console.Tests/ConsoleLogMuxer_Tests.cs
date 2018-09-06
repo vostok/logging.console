@@ -57,7 +57,7 @@ namespace Vostok.Logging.Console.Tests
             new Action(() => eventsWriter.Received().WriteEvents(
                 Arg.Is<LogEventInfo[]>(events => 
                     events.Length == 1 && ReferenceEquals(events[0].Event, e)), 1))
-                .ShouldPassIn(1.Seconds());
+                .ShouldPassIn(5.Seconds());
         }
 
         [Test]
@@ -70,7 +70,7 @@ namespace Vostok.Logging.Console.Tests
             new Action(() => eventsWriter.Received().WriteEvents(
                     Arg.Is<LogEventInfo[]>(events =>
                         events.Length == 1 && ReferenceEquals(events[0].Settings, settings)), 1))
-                .ShouldPassIn(1.Seconds());
+                .ShouldPassIn(5.Seconds());
         }
 
         [Test]
