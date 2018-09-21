@@ -92,10 +92,10 @@ namespace Vostok.Logging.Console
                         }
                         catch
                         {
-                            await Task.Delay(100);
+                            await Task.Delay(100).ConfigureAwait(false);
                         }
 
-                        await Task.WhenAny(events.TryWaitForNewItemsAsync(NewEventsTimeout), flushSignal.WaitAsync());
+                        await Task.WhenAny(events.TryWaitForNewItemsAsync(NewEventsTimeout), flushSignal.WaitAsync()).ConfigureAwait(false);
 
                         flushSignal.Reset();
                     }
