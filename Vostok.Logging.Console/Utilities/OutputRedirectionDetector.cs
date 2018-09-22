@@ -23,7 +23,7 @@ namespace Vostok.Logging.Console.Utilities
                 if (name == null)
                     return false;
                 
-                return !(name.StartsWith("System.") && name.EndsWith("ConsoleStream"));
+                return !(name.StartsWith("System.", StringComparison.Ordinal) && name.EndsWith("ConsoleStream", StringComparison.Ordinal));
             }
             catch (Exception)
             {
