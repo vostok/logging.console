@@ -52,7 +52,7 @@ namespace Vostok.Logging.Console.EventsWriting
                 {
                     writer.WriteLogEvent(eventInfo);
                 }
-                catch(Exception e)
+                catch
                 {
                     // ignored
                 }
