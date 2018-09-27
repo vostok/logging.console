@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Vostok.Logging.Console.Utilities;
 
 namespace Vostok.Logging.Console.EventsWriting
 {
@@ -15,13 +16,18 @@ namespace Vostok.Logging.Console.EventsWriting
 
         public IConsoleWriter CreateWriter()
         {
-            var colorChanger = featuresDetector.AreColorsSupported ? 
-                new ConsoleColorChanger() as IConsoleColorChanger : 
-                new FakeConsoleColorChanger();
+            var colorChanger = featuresDetector.AreColorsSupported ? new ConsoleColorChanger() as IConsoleColorChanger : new FakeConsoleColorChanger();
+
+            return new ConsoleWriter(ObtainTextWriter(), colorChanger);
+        }
+
+        private TextWriter ObtainTextWriter()
+        {
+            if (OutputRedirectionDetector.IsOutputRedirected())
+                return System.Console.Out;
 
             var stream = System.Console.OpenStandardOutput();
-            var writer = new StreamWriter(stream, System.Console.OutputEncoding, bufferSize, true) {AutoFlush = false};
-            return new ConsoleWriter(writer, colorChanger);
+            return new StreamWriter(stream, System.Console.OutputEncoding, bufferSize, true) {AutoFlush = false};
         }
     }
 }
