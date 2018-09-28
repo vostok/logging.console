@@ -16,6 +16,9 @@ namespace Vostok.Logging.Console.Utilities
             {
                 var internalTextWriter = extractBaseWriter(System.Console.Out);
 
+                if (internalTextWriter == null)
+                    return false;
+
                 if (!(internalTextWriter is StreamWriter streamWriter))
                     return true;
 
