@@ -1,3 +1,10 @@
+## 0.1.2 (01.10.2018):
+
+### Bugfixes
+
+* Fixed a small bug in output redirection detection.
+
+
 ## 0.1.1 (27.09.2018):
 
 ### Enhancements
