@@ -15,8 +15,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Title>Vostok console logging library</Title>
-    <Description>Console logging library for microservice toolkit http://vostok.tools/</Description>
+    <Title>Vostok.Logging.Console</Title>
+    <Description>An implementation of ILog that asynchronously writes events to console.</Description>
   </PropertyGroup>
 
   <PropertyGroup>
