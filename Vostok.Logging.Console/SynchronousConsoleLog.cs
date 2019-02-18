@@ -48,7 +48,7 @@ namespace Vostok.Logging.Console
 
             lock (sync)
             {
-                CreateEventsWriter(OutputBufferSize).WriteEvents(new[]
+                CreateEventsWriter().WriteEvents(new[]
                 {
                     new LogEventInfo(@event, settings)
                 }, 1);
@@ -72,11 +72,11 @@ namespace Vostok.Logging.Console
             return new SourceContextWrapper(this, context);
         }
 
-        private static EventsWriter CreateEventsWriter(int outputBufferSize)
+        private static EventsWriter CreateEventsWriter()
         {
             var consoleFeaturesDetector = new ConsoleFeaturesDetector();
-            var consoleWriterFactory = new ConsoleWriterFactory(consoleFeaturesDetector, outputBufferSize);
-            var consoleWriter = consoleWriterFactory.CreateWriter();
+            var consoleWriterFactory = new ConsoleWriterFactory(consoleFeaturesDetector, 0);
+            var consoleWriter = consoleWriterFactory.CreateWriter(useConsoleOut: true);
             var eventsBatcher = new EventsBatcher(consoleFeaturesDetector);
             return new EventsWriter(eventsBatcher, consoleWriter, consoleFeaturesDetector);
         }
