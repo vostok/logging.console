@@ -1,13 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Formatting;
 
 namespace Vostok.Logging.Console.Tests
 {
+    [TestFixture]
+    public class StrangeBug_Tests
+    {
+        private static volatile string testname = null;
+        private static volatile TestExecutionContext Ctx;
+        private Task logger;
+
+        [SetUp]
+        public void setup()
+        {
+            if (logger != null)
+                return;
+            
+            logger =  Task.Run(
+                () =>
+                {
+                    try
+                    {
+                        while (true)
+                        {
+                            var n = testname;
+                            if (n != null)
+                            {
+                                Ctx = TestExecutionContext.CurrentContext;
+                                TestContext.WriteLine(n);
+                            }
+
+                            Thread.Sleep(1000);
+                        }
+
+                    }
+                    catch (Exception e)
+                    {
+                        System.Console.WriteLine(e);
+                    }
+                });
+        }
+
+        [TestCase("A")]
+        [TestCase("B")]
+        public void A(string x)
+        {
+            System.Console.WriteLine("start");
+            Task.Run(() => System.Console.WriteLine("from " + x + " task")).GetAwaiter().GetResult();
+            testname = x;
+            Thread.Sleep(2000);
+            System.Console.WriteLine(Ctx.GetType().FullName);
+            System.Console.WriteLine(Ctx.CurrentTest.FullName);
+            // (TestExecutionContext.CurrentContext == Ctx).Should().BeTrue();
+            Thread.Sleep(2000);
+        }
+    }
+
     [TestFixture]
     public class ConsoleLog_Tests
     {
