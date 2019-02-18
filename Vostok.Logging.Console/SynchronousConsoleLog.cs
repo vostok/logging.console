@@ -1,5 +1,8 @@
 using System;
+using System.IO;
+using System.Runtime.InteropServices.ComTypes;
 using JetBrains.Annotations;
+using Vostok.Commons.Collections;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Abstractions.Wrappers;
 using Vostok.Logging.Console.EventsWriting;
@@ -20,6 +23,9 @@ namespace Vostok.Logging.Console
         private static readonly ConsoleLogSettings DefaultSettings = new ConsoleLogSettings();
 
         private readonly ConsoleLogSettings settings;
+
+        private readonly CachingTransform<TextWriter, IEventsWriter> transform
+            = new CachingTransform<TextWriter, IEventsWriter>(_ => CreateEventsWriter(), () => System.Console.Out);
 
         private static readonly object sync = new object();
 
@@ -48,7 +54,7 @@ namespace Vostok.Logging.Console
 
             lock (sync)
             {
-                CreateEventsWriter().WriteEvents(new[]
+                transform.Get().WriteEvents(new[]
                 {
                     new LogEventInfo(@event, settings)
                 }, 1);
