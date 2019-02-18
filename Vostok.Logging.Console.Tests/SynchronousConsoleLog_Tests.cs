@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using FluentAssertions;
-using NSubstitute;
 using NUnit.Framework;
 using Vostok.Logging.Abstractions;
-using Vostok.Logging.Formatting;
 
 namespace Vostok.Logging.Console.Tests
 {
@@ -21,11 +17,10 @@ namespace Vostok.Logging.Console.Tests
         }
 
         [Test]
-        public void Should_write_some_trash()
+        public void Should_write_some_text()
         {
             var log = new SynchronousConsoleLog();
-            var sb = new StringBuilder();
-            var writer = new StringWriter(sb);
+            var writer = new StringWriter();
             var oldOut = System.Console.Out;
             try
             {
@@ -33,7 +28,7 @@ namespace Vostok.Logging.Console.Tests
                 log.Log(new LogEvent(LogLevel.Info, new DateTimeOffset(
                     2019, 2, 18, 15, 43, 9, 494, TimeSpan.Zero),
                     "template"));
-                sb.ToString().Should().BeEquivalentTo("2019-02-18 15:43:09,494 INFO  template");
+                writer.GetStringBuilder().ToString().Trim().Should().BeEquivalentTo("2019-02-18 15:43:09,494 INFO  template");
             }
             finally
             {
