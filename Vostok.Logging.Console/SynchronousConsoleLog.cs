@@ -21,6 +21,8 @@ namespace Vostok.Logging.Console
 
         private readonly ConsoleLogSettings settings;
 
+        private static readonly object sync = new object();
+
         /// <summary>
         /// <para>Create a new console log with the given settings.</para>
         /// <para>An exception will be thrown if the provided <paramref name="settings" /> are invalid.</para>
@@ -44,7 +46,13 @@ namespace Vostok.Logging.Console
             if (@event == null)
                 return;
 
-            CreateEventsWriter(OutputBufferSize).WriteLogEvent(new LogEventInfo(@event, settings));
+            lock (sync)
+            {
+                CreateEventsWriter(OutputBufferSize).WriteEvents(new[]
+                {
+                    new LogEventInfo(@event, settings)
+                }, 1);
+            }
         }
 
         /// <inheritdoc />
@@ -64,11 +72,13 @@ namespace Vostok.Logging.Console
             return new SourceContextWrapper(this, context);
         }
 
-        private static IConsoleWriter CreateEventsWriter(int outputBufferSize)
+        private static EventsWriter CreateEventsWriter(int outputBufferSize)
         {
             var consoleFeaturesDetector = new ConsoleFeaturesDetector();
             var consoleWriterFactory = new ConsoleWriterFactory(consoleFeaturesDetector, outputBufferSize);
-            return consoleWriterFactory.CreateWriter();
+            var consoleWriter = consoleWriterFactory.CreateWriter();
+            var eventsBatcher = new EventsBatcher(consoleFeaturesDetector);
+            return new EventsWriter(eventsBatcher, consoleWriter, consoleFeaturesDetector);
         }
     }
 }
