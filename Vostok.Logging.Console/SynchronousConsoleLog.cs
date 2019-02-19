@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Runtime.InteropServices.ComTypes;
 using JetBrains.Annotations;
 using Vostok.Commons.Collections;
 using Vostok.Logging.Abstractions;
@@ -18,16 +17,14 @@ namespace Vostok.Logging.Console
     [PublicAPI]
     public class SynchronousConsoleLog : ILog
     {
-        private const int OutputBufferSize = 65536;
-
         private static readonly ConsoleLogSettings DefaultSettings = new ConsoleLogSettings();
+
+        private static readonly object sync = new object();
 
         private readonly ConsoleLogSettings settings;
 
         private readonly CachingTransform<TextWriter, IEventsWriter> transform
             = new CachingTransform<TextWriter, IEventsWriter>(_ => CreateEventsWriter(), () => System.Console.Out);
-
-        private static readonly object sync = new object();
 
         /// <summary>
         /// <para>Create a new console log with the given settings.</para>
@@ -54,10 +51,13 @@ namespace Vostok.Logging.Console
 
             lock (sync)
             {
-                transform.Get().WriteEvents(new[]
-                {
-                    new LogEventInfo(@event, settings)
-                }, 1);
+                transform.Get()
+                    .WriteEvents(
+                        new[]
+                        {
+                            new LogEventInfo(@event, settings)
+                        },
+                        1);
             }
         }
 
@@ -82,7 +82,7 @@ namespace Vostok.Logging.Console
         {
             var consoleFeaturesDetector = new ConsoleFeaturesDetector();
             var consoleWriterFactory = new ConsoleWriterFactory(consoleFeaturesDetector, 0);
-            var consoleWriter = consoleWriterFactory.CreateWriter(forceConsoleOut: true);
+            var consoleWriter = consoleWriterFactory.CreateWriter(true);
             var eventsBatcher = new EventsBatcher(consoleFeaturesDetector);
             return new EventsWriter(eventsBatcher, consoleWriter, consoleFeaturesDetector);
         }
