@@ -1,3 +1,10 @@
+## 0.1.3 (19.02.2019):
+
+### Features
+
+* Added synchronous version of ConsoleLog called SynchronousConsoleLog.
+
+
 ## 0.1.2 (01.10.2018):
 
 ### Bugfixes
