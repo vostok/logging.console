@@ -2,6 +2,6 @@
 {
     internal interface IConsoleWriterFactory
     {
-        IConsoleWriter CreateWriter(bool useConsoleOut = false);
+        IConsoleWriter CreateWriter(bool forceConsoleOut = false);
     }
 }

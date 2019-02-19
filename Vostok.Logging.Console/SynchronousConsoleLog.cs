@@ -82,7 +82,7 @@ namespace Vostok.Logging.Console
         {
             var consoleFeaturesDetector = new ConsoleFeaturesDetector();
             var consoleWriterFactory = new ConsoleWriterFactory(consoleFeaturesDetector, 0);
-            var consoleWriter = consoleWriterFactory.CreateWriter(useConsoleOut: true);
+            var consoleWriter = consoleWriterFactory.CreateWriter(forceConsoleOut: true);
             var eventsBatcher = new EventsBatcher(consoleFeaturesDetector);
             return new EventsWriter(eventsBatcher, consoleWriter, consoleFeaturesDetector);
         }
