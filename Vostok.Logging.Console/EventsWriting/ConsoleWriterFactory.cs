@@ -14,16 +14,16 @@ namespace Vostok.Logging.Console.EventsWriting
             this.bufferSize = bufferSize;
         }
 
-        public IConsoleWriter CreateWriter()
+        public IConsoleWriter CreateWriter(bool useConsoleOut = false)
         {
             var colorChanger = featuresDetector.AreColorsSupported ? new ConsoleColorChanger() as IConsoleColorChanger : new FakeConsoleColorChanger();
 
-            return new ConsoleWriter(ObtainTextWriter(), colorChanger);
+            return new ConsoleWriter(ObtainTextWriter(useConsoleOut), colorChanger);
         }
 
-        private TextWriter ObtainTextWriter()
+        private TextWriter ObtainTextWriter(bool useConsoleOut)
         {
-            if (OutputRedirectionDetector.IsOutputRedirected())
+            if (useConsoleOut || OutputRedirectionDetector.IsOutputRedirected())
                 return System.Console.Out;
 
             var stream = System.Console.OpenStandardOutput();
