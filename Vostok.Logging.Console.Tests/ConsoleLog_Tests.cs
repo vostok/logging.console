@@ -4,6 +4,7 @@ using FluentAssertions;
 using NSubstitute;
 using NUnit.Framework;
 using Vostok.Logging.Abstractions;
+using Vostok.Logging.Abstractions.Values;
 using Vostok.Logging.Formatting;
 
 namespace Vostok.Logging.Console.Tests
@@ -41,11 +42,11 @@ namespace Vostok.Logging.Console.Tests
         {
             CaptureEvents(log => log.ForContext("ctx").Info("Test."))
                 .Should()
-                .ContainSingle(e => (string)e.Properties[WellKnownProperties.SourceContext] == "ctx");
+                .ContainSingle(e => e.Properties[WellKnownProperties.SourceContext].Equals(new SourceContextValue("ctx")));
         }
 
         [Test]
-        public void ForContext_should_replace_SourceContext_property()
+        public void ForContext_should_accumulate_SourceContext_property()
         {
             CaptureEvents(
                     log => log
@@ -54,7 +55,7 @@ namespace Vostok.Logging.Console.Tests
                         .ForContext("ctx3")
                         .Info("Test."))
                 .Should()
-                .ContainSingle(e => (string)e.Properties[WellKnownProperties.SourceContext] == "ctx3");
+                .ContainSingle(e => e.Properties[WellKnownProperties.SourceContext].Equals(new SourceContextValue(new [] {"ctx", "ctx2", "ctx3"})));
         }
 
         private static IEnumerable<LogEvent> CaptureEvents(Action<ConsoleLog> action)
