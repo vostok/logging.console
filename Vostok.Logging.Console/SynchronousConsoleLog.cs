@@ -10,9 +10,8 @@ namespace Vostok.Logging.Console
 {
     /// <summary>
     /// <para>A log which outputs events to console.</para>
-    /// <para>
-    ///     The implementation is synchronous: logged messages are immediately rendered and written to console.
-    /// </para>
+    /// <para>In contrast to <see cref="ConsoleLog"/>, this implementation is synchronous: logged messages are immediately rendered and written to console.</para>
+    /// <para>It has much lower throughput than <see cref="ConsoleLog"/> and is only recommended for testing and debugging purposes.</para>
     /// </summary>
     [PublicAPI]
     public class SynchronousConsoleLog : ILog
@@ -64,12 +63,7 @@ namespace Vostok.Logging.Console
         /// <inheritdoc />
         public bool IsEnabledFor(LogLevel level) => true;
 
-        /// <summary>
-        /// Returns a log based on this <see cref="ConsoleLog" /> instance that puts given <paramref name="context" /> string into
-        /// <see
-        ///     cref="F:Vostok.Logging.Abstractions.WellKnownProperties.SourceContext" />
-        /// property of all logged events.
-        /// </summary>
+        /// <inheritdoc />
         public ILog ForContext(string context)
         {
             if (context == null)
