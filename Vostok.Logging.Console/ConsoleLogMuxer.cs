@@ -58,7 +58,7 @@ namespace Vostok.Logging.Console
             if (!isInitialized)
                 return Task.CompletedTask;
 
-            var waiter = new Waiter();
+            var waiter = new Waiter(TaskCreationOptions.RunContinuationsAsynchronously);
 
             lock (flushWaiters)
                 flushWaiters.Add(waiter);

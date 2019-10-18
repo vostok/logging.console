@@ -1,4 +1,4 @@
-## 1.0.1 (18.10.2019):
+## 1.0.2 (18.10.2019):
 
 * Fixed lowerCamelCase `WellKnownProperties`.
 
