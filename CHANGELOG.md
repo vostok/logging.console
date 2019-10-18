@@ -1,3 +1,7 @@
+## 1.0.1 (18.10.2019):
+
+* Fixed lowerCamelCase `WellKnownProperties`.
+
 ## 1.0.0 (11.03.2019):
 
 Breaking change: ForContext() is now hierarchical.
