@@ -1,3 +1,7 @@
+## 1.0.4 (29.09.2020):
+
+Optimized rendering of unstructured log events without actual templating in messages.
+
 ## 1.0.3 (25.06.2020):
 
 Slight performance improvements.
