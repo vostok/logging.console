@@ -1,3 +1,8 @@
+## 1.0.6 (24.08.2021):
+
+Rewrite `SynchronousConsoleLog` (see [#5](https://github.com/vostok/logging.console/issues/5)).
+
+
 ## 1.0.5 (29.09.2020):
 
 Optimized rendering of unstructured log events without actual templating in messages.
