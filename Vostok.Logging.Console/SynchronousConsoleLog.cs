@@ -1,10 +1,9 @@
 using System;
-using System.IO;
 using JetBrains.Annotations;
-using Vostok.Commons.Collections;
 using Vostok.Logging.Abstractions;
 using Vostok.Logging.Abstractions.Wrappers;
 using Vostok.Logging.Console.EventsWriting;
+using Vostok.Logging.Formatting;
 
 namespace Vostok.Logging.Console
 {
@@ -18,12 +17,11 @@ namespace Vostok.Logging.Console
     {
         private static readonly ConsoleLogSettings DefaultSettings = new ConsoleLogSettings();
 
-        private static readonly object sync = new object();
+        private static readonly object Sync = new object();
 
         private readonly ConsoleLogSettings settings;
-
-        private readonly CachingTransform<TextWriter, IEventsWriter> transform
-            = new CachingTransform<TextWriter, IEventsWriter>(_ => CreateEventsWriter(), () => System.Console.Out);
+        private readonly ConsoleFeaturesDetector consoleFeaturesDetector;
+        private readonly ConsoleColorChanger consoleColorChanger;
 
         /// <summary>
         /// <para>Create a new console log with the given settings.</para>
@@ -32,6 +30,8 @@ namespace Vostok.Logging.Console
         public SynchronousConsoleLog([NotNull] ConsoleLogSettings settings)
         {
             this.settings = SettingsValidator.ValidateInstanceSettings(settings);
+            consoleFeaturesDetector = new ConsoleFeaturesDetector();
+            consoleColorChanger = new ConsoleColorChanger();
         }
 
         /// <summary>
@@ -48,15 +48,20 @@ namespace Vostok.Logging.Console
             if (@event == null)
                 return;
 
-            lock (sync)
+            var str = LogEventFormatter.Format(@event, settings.OutputTemplate, settings.FormatProvider);
+
+            lock (Sync)
             {
-                transform.Get()
-                    .WriteEvents(
-                        new[]
-                        {
-                            new LogEventInfo(@event, settings)
-                        },
-                        1);
+                if (settings.ColorsEnabled && consoleFeaturesDetector.AreColorsSupported)
+                {
+                    if (!settings.ColorMapping.TryGetValue(@event.Level, out var color))
+                        color = ConsoleColor.Gray;
+
+                    using (consoleColorChanger.ChangeColor(color))
+                        System.Console.Out.Write(str);
+                }
+                else
+                    System.Console.Out.Write(str);
             }
         }
 
@@ -70,15 +75,6 @@ namespace Vostok.Logging.Console
                 throw new ArgumentNullException(nameof(context));
 
             return new SourceContextWrapper(this, context);
-        }
-
-        private static EventsWriter CreateEventsWriter()
-        {
-            var consoleFeaturesDetector = new ConsoleFeaturesDetector();
-            var consoleWriterFactory = new ConsoleWriterFactory(consoleFeaturesDetector, 0);
-            var consoleWriter = consoleWriterFactory.CreateWriter(true);
-            var eventsBatcher = new EventsBatcher(consoleFeaturesDetector);
-            return new EventsWriter(eventsBatcher, consoleWriter, consoleFeaturesDetector);
         }
     }
 }
