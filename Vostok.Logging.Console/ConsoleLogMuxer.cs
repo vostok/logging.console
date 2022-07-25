@@ -13,7 +13,7 @@ namespace Vostok.Logging.Console
 {
     internal class ConsoleLogMuxer : IConsoleLogMuxer
     {
-        private static readonly TimeSpan NewEventsTimeout = TimeSpan.FromSeconds(1);
+        private static readonly TimeSpan NewEventsTimeout = TimeSpan.FromMilliseconds(100);
         private static readonly List<Waiter> EmptyWaitersList = new List<Waiter>();
 
         private readonly AsyncManualResetEvent flushSignal = new AsyncManualResetEvent(true);
@@ -32,7 +32,7 @@ namespace Vostok.Logging.Console
         {
             this.eventsWriter = eventsWriter;
             temporaryBuffer = new LogEventInfo[temporaryBufferCapacity];
-            events = new ConcurrentBoundedQueue<LogEventInfo>(eventsQueueCapacity);
+            events = new ConcurrentBoundedQueue<LogEventInfo>(eventsQueueCapacity, Math.Max(1, eventsQueueCapacity / 20));
         }
 
         public long EventsLost => Interlocked.Read(ref eventsLost);
@@ -95,7 +95,7 @@ namespace Vostok.Logging.Console
                             await Task.Delay(100).ConfigureAwait(false);
                         }
 
-                        await Task.WhenAny(events.TryWaitForNewItemsAsync(NewEventsTimeout), flushSignal.WaitAsync()).ConfigureAwait(false);
+                        await Task.WhenAny(events.TryWaitForNewItemsBatchAsync(NewEventsTimeout), flushSignal.WaitAsync()).ConfigureAwait(false);
 
                         flushSignal.Reset();
                     }
