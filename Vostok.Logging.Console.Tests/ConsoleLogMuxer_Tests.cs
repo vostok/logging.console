@@ -25,12 +25,12 @@ namespace Vostok.Logging.Console.Tests
         [Test]
         public void EventsLost_should_be_incremented_after_losing_an_event()
         {
-            muxer = new ConsoleLogMuxer(eventsWriter, 0, 1);
+            muxer = new ConsoleLogMuxer(eventsWriter, 1, 1);
 
-            muxer.TryLog(CreateEvent(), new ConsoleLogSettings());
-            muxer.TryLog(CreateEvent(), new ConsoleLogSettings());
+            for (var i = 0; i < 100; i++)
+                muxer.TryLog(CreateEvent(), new ConsoleLogSettings());
 
-            muxer.EventsLost.Should().Be(2);
+            muxer.EventsLost.Should().BeGreaterThan(50);
         }
 
         [Test]
@@ -42,9 +42,15 @@ namespace Vostok.Logging.Console.Tests
         [Test]
         public void TryLog_should_return_false_if_event_was_not_added()
         {
-            muxer = new ConsoleLogMuxer(eventsWriter, 0, 1);
+            muxer = new ConsoleLogMuxer(eventsWriter, 1, 1);
 
-            muxer.TryLog(CreateEvent(), new ConsoleLogSettings()).Should().BeFalse();
+            var added = 0;
+            
+            for (var i = 0; i < 100; i++)
+                if (muxer.TryLog(CreateEvent(), new ConsoleLogSettings()))
+                    added++;
+
+            added.Should().BeLessThan(50);
         }
 
         [Test]
