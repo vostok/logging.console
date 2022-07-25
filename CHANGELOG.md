@@ -1,3 +1,7 @@
+## 1.0.9 (25-07-2022):
+
+Used new `ConcurrentBoundedQueue.TryWaitForNewItemsBatchAsync` method with delay to avoid thread pool issues.
+
 ## 1.0.8 (06-12-2021):
 
 Added `net6.0` target.
