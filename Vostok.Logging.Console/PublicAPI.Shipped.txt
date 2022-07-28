@@ -1,0 +1,35 @@
+static Vostok.Logging.Console.ConsoleLog.Flush() -> void
+static Vostok.Logging.Console.ConsoleLog.FlushAsync() -> System.Threading.Tasks.Task
+static Vostok.Logging.Console.ConsoleLog.TotalEventsLost.get -> long
+static Vostok.Logging.Console.ConsoleLog.UpdateGlobalSettings(Vostok.Logging.Console.ConsoleLogGlobalSettings newSettings) -> void
+Vostok.Logging.Console.ConsoleLog
+Vostok.Logging.Console.ConsoleLog.ConsoleLog() -> void
+Vostok.Logging.Console.ConsoleLog.ConsoleLog(Vostok.Logging.Console.ConsoleLogSettings settings) -> void
+Vostok.Logging.Console.ConsoleLog.EventsLost.get -> long
+Vostok.Logging.Console.ConsoleLog.ForContext(string context) -> Vostok.Logging.Abstractions.ILog
+Vostok.Logging.Console.ConsoleLog.IsEnabledFor(Vostok.Logging.Abstractions.LogLevel level) -> bool
+Vostok.Logging.Console.ConsoleLog.Log(Vostok.Logging.Abstractions.LogEvent event) -> void
+Vostok.Logging.Console.ConsoleLogGlobalSettings
+Vostok.Logging.Console.ConsoleLogGlobalSettings.ConsoleLogGlobalSettings() -> void
+Vostok.Logging.Console.ConsoleLogGlobalSettings.EventsQueueCapacity.get -> int
+Vostok.Logging.Console.ConsoleLogGlobalSettings.EventsQueueCapacity.set -> void
+Vostok.Logging.Console.ConsoleLogGlobalSettings.EventsTemporaryBufferCapacity.get -> int
+Vostok.Logging.Console.ConsoleLogGlobalSettings.EventsTemporaryBufferCapacity.set -> void
+Vostok.Logging.Console.ConsoleLogGlobalSettings.OutputBufferSize.get -> int
+Vostok.Logging.Console.ConsoleLogGlobalSettings.OutputBufferSize.set -> void
+Vostok.Logging.Console.ConsoleLogSettings
+Vostok.Logging.Console.ConsoleLogSettings.ColorMapping.get -> System.Collections.Generic.Dictionary<Vostok.Logging.Abstractions.LogLevel, System.ConsoleColor>
+Vostok.Logging.Console.ConsoleLogSettings.ColorMapping.set -> void
+Vostok.Logging.Console.ConsoleLogSettings.ColorsEnabled.get -> bool
+Vostok.Logging.Console.ConsoleLogSettings.ColorsEnabled.set -> void
+Vostok.Logging.Console.ConsoleLogSettings.ConsoleLogSettings() -> void
+Vostok.Logging.Console.ConsoleLogSettings.FormatProvider.get -> System.IFormatProvider
+Vostok.Logging.Console.ConsoleLogSettings.FormatProvider.set -> void
+Vostok.Logging.Console.ConsoleLogSettings.OutputTemplate.get -> Vostok.Logging.Formatting.OutputTemplate
+Vostok.Logging.Console.ConsoleLogSettings.OutputTemplate.set -> void
+Vostok.Logging.Console.SynchronousConsoleLog
+Vostok.Logging.Console.SynchronousConsoleLog.ForContext(string context) -> Vostok.Logging.Abstractions.ILog
+Vostok.Logging.Console.SynchronousConsoleLog.IsEnabledFor(Vostok.Logging.Abstractions.LogLevel level) -> bool
+Vostok.Logging.Console.SynchronousConsoleLog.Log(Vostok.Logging.Abstractions.LogEvent event) -> void
+Vostok.Logging.Console.SynchronousConsoleLog.SynchronousConsoleLog() -> void
+Vostok.Logging.Console.SynchronousConsoleLog.SynchronousConsoleLog(Vostok.Logging.Console.ConsoleLogSettings settings) -> void
