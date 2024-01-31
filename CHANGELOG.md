@@ -1,3 +1,7 @@
+## 1.0.10 (31-01-2024):
+
+Use new version of `Vostok.Logging.Formatting` with `ToString` exceptions rendering.
+
 ## 1.0.9 (25-07-2022):
 
 Used new `ConcurrentBoundedQueue.TryWaitForNewItemsBatchAsync` method with delay to avoid thread pool issues.
